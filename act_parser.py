@@ -2,22 +2,20 @@ import glob
 import os
 from pathlib import Path
 
-log_folder = Path.home() / 'AppData' / 'Roaming' / 'Advanced Combat Tracker' / 'FFXIVLogs'
+LOG_FOLDER = Path.home() / 'AppData' / 'Roaming' / 'Advanced Combat Tracker' / 'FFXIVLogs'
 
 
-def get_logs(history_state):
+def get_logs(log_folder):
+    return glob.glob(log_folder + '*')
 
-    # Find the most recent logs file
-    list_of_files = glob.glob(log_folder + '*')  # * means all if need specific format then *.csv
-    while history_state > 0:
-        list_of_files.remove(max(list_of_files, key=os.path.getctime))
-        history_state -= 1
-    log_file = max(list_of_files, key=os.path.getctime)
 
-    # Open the logs file and extract the text
-    log = open(log_file, "r", encoding="utf8")
-    log_text = log.read()
-    return log_text
+def get_most_recent_log(list_of_files):
+    return max(list_of_files, key=os.path.getctime)
+
+
+def get_log_text(log_file):
+    with open(log_file, "r", encoding="utf8") as log:
+        return log.read()
 
 
 async def get_last_post(client, message):
