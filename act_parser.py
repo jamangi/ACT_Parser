@@ -1,4 +1,3 @@
-import glob
 import os
 from pathlib import Path
 
@@ -6,11 +5,12 @@ LOG_FOLDER = Path.home() / 'AppData' / 'Roaming' / 'Advanced Combat Tracker' / '
 
 
 def get_logs(log_folder):
-    return glob.glob(log_folder + '*')
+    folder_path = Path(log_folder)
+    return [file for file in folder_path.iterdir() if file.is_file()]
 
 
 def get_most_recent_log(list_of_files):
-    return max(list_of_files, key=os.path.getctime)
+    return max(list_of_files, key=os.path.getmtime)
 
 
 def get_log_text(log_file):
