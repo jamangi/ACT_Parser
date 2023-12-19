@@ -101,4 +101,4 @@ async def ffxivparse(client, message):
     return messages_split
 
 if __name__ == '__main__':
-    print(log_folder)
+    print(LOG_FOLDER)
