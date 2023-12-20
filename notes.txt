@@ -1,0 +1,59 @@
+Lyonette Shivertail
+
+log codes:
+1. 108739E2 - irrelevant movement
+2. 000E - party speech
+3. 001D - relevant emote
+4. 000D - tell from person @ me
+5. 000C - me tell @ person
+6. 000B - shout
+7. 001E - yell
+8. 000A - say
+
+Current Algorithm:
+ Control Variables:
+ - history = 0
+ - found_all_new_logs = false
+ Data Variables:
+ - new_logs
+ - lines_in_last_update
+ Algorithm:
+ 1. get_logs: get all the log text up until the last seen line of text
+- get discord logs
+- search main logs for spot where recent discord log appears
+- grab all the new logs from that point
+ 2. parse_logs: parse the text so that only our messages remain
+ 3. split_into_chunks: split the text up if it's too large for discord's 2000-character limit
+ 4. post_to_discord: post to a particular channel
+
+
+My Design:
+1. Log Saver - Module that saves all the local logs to a SQL database, and assigns each log a (type, date, author, receiver (if tell))
+ - This SQL file could be sent to GitHub, exchanged over drive, or recreated from local logs
+ - It doesn't delete or update logs, it just creates and reads them.
+ - All filters should be implementable with SQL queries if the Log Saver creates the data model effectively.
+	- filtering for party chat will suffice for keeping tells private. But tells can be searched for as well.
+
+2. Discord Interface - Will allow the user to post logs to discord and apply filters if desired
+ - It will have a no-redundancy feature, which only posts logs that take place after the last log posted to discord.
+  - If game time is used in logs, we can use the time. But if that's dependent on region, we'll have to use a text search strategy.
+
+My MVP Algorithm:
+1.
+
+
+
+Notes:
+- Current Alg get_logs: The line of text used to find where we left off needs to be unique. We could save the exact line, raw without changes, in a different channel, and check that channel's last message when we need the key. Or
+- Current Alg get_logs: Getting all the text: The naive way is to concatenate all the logs. But it might be faster to check the log files one at a time and stop once we find the one we're looking for. We could also save the name of the most recent log file in the save channel, and just start from that log file.
+- Current Alg parse_logs: It looks for particular names, but it should look for codes instead
+
+- My Filters: For filters to eventually work, each logged message will need a (type, date, author, receiver (if tell))
+
+- Enhancements:
+  - It could be nice to create new log files, so that large log files can be deleted.
+
+	Filters
+  - It could be nice to filter logs by type (all, party, tell, say) or a combination
+  - It could be nice to filter logs by date; for, after, or before a particular date
+  - Might be nice to filter logs by a set of usernames
