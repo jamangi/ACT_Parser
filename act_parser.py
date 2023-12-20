@@ -2,6 +2,17 @@ import os
 from pathlib import Path
 
 LOG_FOLDER = Path.home() / 'AppData' / 'Roaming' / 'Advanced Combat Tracker' / 'FFXIVLogs'
+USER = "Rasp"  # or Grey
+CODES = {
+    "108739E2": "Irrelevant Movement",
+    "000E": "Party",
+    "001D": "Emote",
+    "000D": f"Tell from Person to {USER}",
+    "000C": f"Tell from {USER} to Person",
+    "000B": "Shout",
+    "001E": "Yell",
+    "000A": "Say"
+}
 
 
 def get_logs(log_folder):
@@ -41,11 +52,12 @@ def do_we_have_all_needed_logs(last_post_lines, logs):
                 return False
     return True
 
+
 def find_where_to_start(lines, logs):
     # Isolate the part of the logs text that comes after the last lines
     for line in lines[-10:]:
         line_text = line.split('): ', 1)[1]  # Eliminate character name from line
-        logs = logs.split(line_text, 1)[-1]  # Check for the first instance of the last ten lines. Hopefully this way we'll find the end of the last log file!
+        logs = logs.split(line_text, 1)[-1]  # Check for the first instance of the last ten lines.
     return logs
 
 
