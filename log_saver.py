@@ -19,5 +19,10 @@ def find_logfiles(string_path: str) -> (str, int):
     logfiles = dict(logfiles_list)
     return logfiles
 
-if __name__ == "__main__":
-    pass
+
+class LogDatabase:
+    def __init__(self, db_path):
+        self.db_path = db_path
+
+    def create_table(self):
+        pass
