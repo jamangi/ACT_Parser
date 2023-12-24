@@ -1,4 +1,5 @@
 import os
+import sqlite3
 
 
 def find_logfiles(string_path: str) -> (str, int):
@@ -24,5 +25,21 @@ class LogDatabase:
     def __init__(self, db_path):
         self.db_path = db_path
 
+
     def create_log_file_table(self):
-        pass
+        with sqlite3.connect(self.db_path) as connection:
+            cursor = connection.cursor()
+            cursor.execute('''
+                CREATE TABLE IF NOT EXISTS logs (
+                    log_filename TEXT,
+                    size INTEGER
+                )
+            ''')
+
+# Example usage:
+if __name__ == "__main__":
+    # Creating an instance of LogDatabase
+    log_db = LogDatabase("example_database.db")
+
+    # Creating the table
+    log_db.create_log_file_table()
