@@ -29,7 +29,7 @@ def test_create_log_file_table(temp_db):
     # Check if the table exists in the database
     with sqlite3.connect(temp_db) as connection:
         cursor = connection.cursor()
-        cursor.execute("PRAGMA table_info(logs)")
+        cursor.execute("PRAGMA table_info(log_files)")
         table_info = cursor.fetchall()
 
     # Assert that the table has the expected structure
