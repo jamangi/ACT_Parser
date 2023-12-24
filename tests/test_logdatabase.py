@@ -32,3 +32,29 @@ def test_create_log_file_table(temp_db):
                         ('size', 'INTEGER', 0, None, 0)]
 
     assert table_info == expected_columns
+
+
+# Pytest test function for create_logs_table method in LogDatabase
+def test_create_logs_table(temp_db):
+    # Create an instance of LogDatabase
+    log_db = LogDatabase(temp_db)
+
+    # Call the create_logs_table method
+    log_db.create_logs_table()
+
+    # Check if the table exists in the database
+    with sqlite3.connect(temp_db) as connection:
+        cursor = connection.cursor()
+        cursor.execute("PRAGMA table_info(Logs)")
+        table_info = cursor.fetchall()
+
+    # Assert that the table has the expected structure
+    expected_columns = [
+        ('datetime', 'TEXT', 0, None, 0),
+        ('type', 'TEXT', 0, None, 0),
+        ('author', 'TEXT', 0, None, 0),
+        ('receiver', 'TEXT', 0, None, 0),
+        ('content', 'TEXT', 0, None, 0),
+    ]
+
+    assert table_info == expected_columns

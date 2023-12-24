@@ -26,3 +26,6 @@ class LogDatabase:
 
     def create_log_file_table(self):
         pass
+
+    def create_logs_table(self):
+        pass
