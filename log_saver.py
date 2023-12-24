@@ -30,14 +30,24 @@ class LogDatabase:
         with sqlite3.connect(self.db_path) as connection:
             cursor = connection.cursor()
             cursor.execute('''
-                CREATE TABLE IF NOT EXISTS logs (
+                CREATE TABLE IF NOT EXISTS log_files (
                     log_filename TEXT,
                     size INTEGER
                 )
             ''')
 
     def create_logs_table(self):
-        pass
+        with sqlite3.connect(self.db_path) as connection:
+            cursor = connection.cursor()
+            cursor.execute('''
+                CREATE TABLE IF NOT EXISTS logs (
+                    datetime TEXT,
+                    type TEXT,
+                    author TEXT
+                    receiver TEXT
+                    content TEXT
+                )
+            ''')
 
 
 # Example usage:
