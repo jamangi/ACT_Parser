@@ -43,8 +43,8 @@ class LogDatabase:
                 CREATE TABLE IF NOT EXISTS logs (
                     datetime TEXT,
                     type TEXT,
-                    author TEXT
-                    receiver TEXT
+                    author TEXT,
+                    receiver TEXT,
                     content TEXT
                 )
             ''')
