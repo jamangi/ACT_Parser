@@ -39,7 +39,7 @@ class LogDatabase:
 # Example usage:
 if __name__ == "__main__":
     # Creating an instance of LogDatabase
-    log_db = LogDatabase("example_database.db")
+    log_db = LogDatabase("ffxiv_logger.db")
 
     # Creating the table
     log_db.create_log_file_table()
