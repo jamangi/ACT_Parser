@@ -24,5 +24,5 @@ class LogDatabase:
     def __init__(self, db_path):
         self.db_path = db_path
 
-    def create_table(self):
+    def create_log_file_table(self):
         pass

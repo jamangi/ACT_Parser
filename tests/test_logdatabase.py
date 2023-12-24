@@ -14,12 +14,12 @@ def temp_db():
 
 
 # Pytest test function for create_table
-def test_create_table(temp_db):
+def test_create_log_file_table(temp_db):
     # Create an instance of LogDatabase
     log_db = LogDatabase(temp_db)
 
     # Call the create_table method
-    log_db.create_table()
+    log_db.create_log_file_table()
 
     # Check if the table exists in the database
     with sqlite3.connect(temp_db) as connection:
