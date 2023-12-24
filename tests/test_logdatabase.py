@@ -2,15 +2,20 @@ import pytest
 import sqlite3
 import os
 from log_saver import LogDatabase
+from time import sleep
 
+
+@pytest.fixture(scope='session', autouse=True)
+def session_setup(request):
+    db_path = "tests/test_database.db"
+    if os.path.exists(db_path):
+        os.remove(db_path)
 
 # Pytest fixture to create a temporary SQLite database
 @pytest.fixture
-def temp_db():
-    db_path = "test_database.db"
+def temp_db(session_setup):
+    db_path = "tests/test_database.db"
     yield db_path  # This is the value returned by the fixture
-    if os.path.exists(db_path):
-        os.remove(db_path)
 
 
 # Pytest test function for create_table
@@ -28,13 +33,12 @@ def test_create_log_file_table(temp_db):
         table_info = cursor.fetchall()
 
     # Assert that the table has the expected structure
-    expected_columns = [('log_filename', 'TEXT', 0, None, 0),
-                        ('size', 'INTEGER', 0, None, 0)]
+    expected_columns = [(0, 'log_filename', 'TEXT', 0, None, 0),
+                        (1, 'size', 'INTEGER', 0, None, 0)]
 
     assert table_info == expected_columns
 
 
-# Pytest test function for create_logs_table method in LogDatabase
 def test_create_logs_table(temp_db):
     # Create an instance of LogDatabase
     log_db = LogDatabase(temp_db)
@@ -45,6 +49,8 @@ def test_create_logs_table(temp_db):
     # Check if the table exists in the database
     with sqlite3.connect(temp_db) as connection:
         cursor = connection.cursor()
+
+        # Print the table structure for debugging
         cursor.execute("PRAGMA table_info(Logs)")
         table_info = cursor.fetchall()
 

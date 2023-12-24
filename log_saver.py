@@ -36,6 +36,10 @@ class LogDatabase:
                 )
             ''')
 
+    def create_logs_table(self):
+        pass
+
+
 # Example usage:
 if __name__ == "__main__":
     # Creating an instance of LogDatabase
