@@ -42,9 +42,9 @@ class LogDatabase:
             cursor.execute('''
                 CREATE TABLE IF NOT EXISTS logs (
                     datetime TEXT,
-                    type TEXT,
+                    timezone TEXT,
                     author TEXT,
-                    receiver TEXT,
+                    channel TEXT,
                     content TEXT,
                     log_id TEXT
                 )

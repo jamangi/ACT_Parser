@@ -57,9 +57,9 @@ def test_create_logs_table(temp_db):
     # Assert that the table has the expected structure
     expected_columns = [
         (0, 'datetime', 'TEXT', 0, None, 0),
-        (1, 'type', 'TEXT', 0, None, 0),
+        (1, 'timezone', 'TEXT', 0, None, 0),
         (2, 'author', 'TEXT', 0, None, 0),
-        (3, 'receiver', 'TEXT', 0, None, 0),
+        (3, 'channel', 'TEXT', 0, None, 0),
         (4, 'content', 'TEXT', 0, None, 0),
         (5, 'log_id', 'TEXT', 0, None, 0)
     ]
