@@ -43,6 +43,7 @@ class LogDatabase:
                 CREATE TABLE IF NOT EXISTS logs (
                     datetime TEXT,
                     timezone TEXT,
+                    datetime_cst TEXT,
                     author TEXT,
                     channel_code TEXT,
                     channel TEXT,
