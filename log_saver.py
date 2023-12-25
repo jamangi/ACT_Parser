@@ -47,7 +47,7 @@ class LogDatabase:
                     author TEXT,
                     channel_code TEXT,
                     channel TEXT,
-                    content TEXT,
+                    content TEXT
                 )
             ''')
 
