@@ -45,7 +45,8 @@ class LogDatabase:
                     type TEXT,
                     author TEXT,
                     receiver TEXT,
-                    content TEXT
+                    content TEXT,
+                    log_id TEXT
                 )
             ''')
 

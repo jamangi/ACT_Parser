@@ -61,6 +61,7 @@ def test_create_logs_table(temp_db):
         (2, 'author', 'TEXT', 0, None, 0),
         (3, 'receiver', 'TEXT', 0, None, 0),
         (4, 'content', 'TEXT', 0, None, 0),
+        (5, 'log_id', 'TEXT', 0, None, 0)
     ]
 
     assert table_info == expected_columns
