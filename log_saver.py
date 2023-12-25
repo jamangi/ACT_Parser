@@ -48,7 +48,6 @@ class LogDatabase:
                     channel_code TEXT,
                     channel TEXT,
                     content TEXT,
-                    log_id TEXT
                 )
             ''')
 
