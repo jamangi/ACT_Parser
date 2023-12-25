@@ -59,9 +59,10 @@ def test_create_logs_table(temp_db):
         (0, 'datetime', 'TEXT', 0, None, 0),
         (1, 'timezone', 'TEXT', 0, None, 0),
         (2, 'author', 'TEXT', 0, None, 0),
-        (3, 'channel', 'TEXT', 0, None, 0),
-        (4, 'content', 'TEXT', 0, None, 0),
-        (5, 'log_id', 'TEXT', 0, None, 0)
+        (3, 'channel_code', 'TEXT', 0, None, 0),
+        (4, 'channel', 'TEXT', 0, None, 0),
+        (5, 'content', 'TEXT', 0, None, 0),
+        (6, 'log_id', 'TEXT', 0, None, 0)
     ]
 
     assert table_info == expected_columns

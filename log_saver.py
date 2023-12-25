@@ -44,6 +44,7 @@ class LogDatabase:
                     datetime TEXT,
                     timezone TEXT,
                     author TEXT,
+                    channel_code TEXT,
                     channel TEXT,
                     content TEXT,
                     log_id TEXT
