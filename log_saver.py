@@ -23,11 +23,37 @@ def find_logfiles(string_path: str) -> (str, int):
 
 
 class LogDatabase:
+    username = config("FF_USERNAME", default="Haltise El Yokade")  # default is for testing
+
     def __init__(self, db_path):
         self.db_path = db_path
         self.conn = sqlite3.connect(self.db_path)
-        self.username = config("FF_USERNAME", default="Haltise El Yokade")  # default is for testing
 
+    @staticmethod
+    def code_to_channel(other_user="nobody", code="nothing"):
+        """Retrieves and returns a descriptive label for a given channel code.
+
+        Parameters:
+        - code (str): The channel code to be looked up.
+        - other_user (str): The username of the other user involved in the channel communication.
+
+        Returns:
+        str: A descriptive label corresponding to the input channel code, or "unrecognized" if the code is not found."""
+
+        CHANNEL_CODES = {
+            "000E": "Party",
+            "001D": "Emote",
+            "003C": "Error Message",
+            "000D": f"{other_user} tells {LogDatabase.username}",
+            "000C": f"{LogDatabase.username} tells {other_user}",
+            "000B": "Shout",
+            "001E": "Yell",
+            "000A": "Say"
+        }
+        if code in CHANNEL_CODES:
+            return CHANNEL_CODES[code]
+        else:
+            return "unrecognized"
 
     def create_log_file_table(self):
         cursor = self.conn.cursor()
