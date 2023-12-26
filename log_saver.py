@@ -1,6 +1,6 @@
 import os
 import sqlite3
-
+from decouple import config
 
 def find_logfiles(string_path: str) -> (str, int):
     """
@@ -25,6 +25,8 @@ class LogDatabase:
     def __init__(self, db_path):
         self.db_path = db_path
         self.conn = sqlite3.connect(self.db_path)
+        self.username = config("FF_USERNAME", default="Haltise El Yokade")  # default is for testing
+
 
     def create_log_file_table(self):
         cursor = self.conn.cursor()
