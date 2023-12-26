@@ -22,12 +22,12 @@ def test_code_to_channel_error_message():
 
 def test_code_to_channel_tell_receiver():
     result = LogDatabase.code_to_channel(other_user="SomeReceiver", code="000D")
-    assert result == "SomeReceiver tells Haltise El Yokade"
+    assert result == f"SomeReceiver tells {LogDatabase.username}"
 
 
 def test_code_to_channel_tell_user():
     result = LogDatabase.code_to_channel(other_user="SomeUser", code="000C")
-    assert result == "Haltise El Yokade tells SomeUser"
+    assert result == f"{LogDatabase.username} tells SomeUser"
 
 
 def test_code_to_channel_shout():
