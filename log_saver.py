@@ -2,6 +2,7 @@ import os
 import sqlite3
 from decouple import config
 
+
 def find_logfiles(string_path: str) -> (str, int):
     """
     Finds the logfiles in the given directory, which should the be ACT log folder.
@@ -54,6 +55,34 @@ class LogDatabase:
     def __del__(self):
         if self.conn:
             self.conn.close()
+
+    @staticmethod
+    def parse_log(log_text):
+        """Parses a line from the logs to extract:
+        1) Time in perspective time zone (not necessarily CST)
+        2) Time zone in hours from GMT
+        3) Channel code (for example 000E for party chat)
+        4) Author (or recipient if channel code is 000C, tell to)
+        5) Content
+
+        Input: str -- line of log text
+        Output: 5-entry dict {str: str, str: str, str: str, str: str, str: str} -- time, time zone,
+            channel code, author, and content of message
+        """
+
+        # Split logs by |
+        log_list = log_text.split('|')
+
+        # Find attributes
+        time = log_list[1][:-14]  # cuts off milliseconds
+        timezone = log_list[1][-6:]
+        channel_code = log_list[2]
+        author = log_list[3]
+        content = log_list[4]
+
+        # Create dictionary of attributes
+        parsed_log = {'datetime': time, 'timezone': timezone, 'channel_code': channel_code, 'author': author, 'content': content}
+        return parsed_log
 
 
 # Example usage:
