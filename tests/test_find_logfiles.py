@@ -1,8 +1,8 @@
 import os
 import sys
 from pathlib import Path
-import pytest
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+import pytest
 from log_saver import find_logfiles
 
 
@@ -18,6 +18,7 @@ def create_test_logs(tmpdir):
         f.write("Sample content for log file 2.")
 
     return log_dir
+
 
 def test_find_logfiles(create_test_logs):
     # Call the function being tested

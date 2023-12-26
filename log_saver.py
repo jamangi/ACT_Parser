@@ -24,32 +24,34 @@ def find_logfiles(string_path: str) -> (str, int):
 class LogDatabase:
     def __init__(self, db_path):
         self.db_path = db_path
-
+        self.conn = sqlite3.connect(self.db_path)
 
     def create_log_file_table(self):
-        with sqlite3.connect(self.db_path) as connection:
-            cursor = connection.cursor()
-            cursor.execute('''
-                CREATE TABLE IF NOT EXISTS log_files (
-                    log_filename TEXT,
-                    size INTEGER
-                )
-            ''')
+        cursor = self.conn.cursor()
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS log_files (
+                log_filename TEXT,
+                size INTEGER
+            )
+        ''')
 
     def create_logs_table(self):
-        with sqlite3.connect(self.db_path) as connection:
-            cursor = connection.cursor()
-            cursor.execute('''
-                CREATE TABLE IF NOT EXISTS logs (
-                    datetime TEXT,
-                    timezone TEXT,
-                    datetime_cst TEXT,
-                    author TEXT,
-                    channel_code TEXT,
-                    channel TEXT,
-                    content TEXT
-                )
-            ''')
+        cursor = self.conn.cursor()
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS logs (
+                datetime TEXT,
+                timezone TEXT,
+                datetime_cst TEXT,
+                author TEXT,
+                channel_code TEXT,
+                channel TEXT,
+                content TEXT
+            )
+        ''')
+
+    def __del__(self):
+        if self.conn:
+            self.conn.close()
 
 
 # Example usage:

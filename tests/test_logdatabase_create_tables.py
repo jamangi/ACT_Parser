@@ -5,16 +5,10 @@ from log_saver import LogDatabase
 from time import sleep
 
 
-@pytest.fixture(scope='session', autouse=True)
-def session_setup(request):
-    db_path = "tests/test_database.db"
-    if os.path.exists(db_path):
-        os.remove(db_path)
-
 # Pytest fixture to create a temporary SQLite database
 @pytest.fixture
-def temp_db(session_setup):
-    db_path = "tests/test_database.db"
+def temp_db():
+    db_path = ":memory:"
     yield db_path  # This is the value returned by the fixture
 
 
@@ -27,10 +21,9 @@ def test_create_log_file_table(temp_db):
     log_db.create_log_file_table()
 
     # Check if the table exists in the database
-    with sqlite3.connect(temp_db) as connection:
-        cursor = connection.cursor()
-        cursor.execute("PRAGMA table_info(log_files)")
-        table_info = cursor.fetchall()
+    cursor = log_db.conn.cursor()
+    cursor.execute("PRAGMA table_info(log_files)")
+    table_info = cursor.fetchall()
 
     # Assert that the table has the expected structure
     expected_columns = [(0, 'log_filename', 'TEXT', 0, None, 0),
@@ -47,12 +40,11 @@ def test_create_logs_table(temp_db):
     log_db.create_logs_table()
 
     # Check if the table exists in the database
-    with sqlite3.connect(temp_db) as connection:
-        cursor = connection.cursor()
+    cursor = log_db.conn.cursor()
 
-        # Print the table structure for debugging
-        cursor.execute("PRAGMA table_info(Logs)")
-        table_info = cursor.fetchall()
+    # Print the table structure for debugging
+    cursor.execute("PRAGMA table_info(Logs)")
+    table_info = cursor.fetchall()
 
     # Assert that the table has the expected structure
     expected_columns = [
