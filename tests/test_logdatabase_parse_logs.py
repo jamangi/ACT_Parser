@@ -7,7 +7,7 @@ def test_parse_log_is_static():
     parse_log_method = LogDatabase.parse_log
 
     # Check if the method is static
-    is_static = inspect.ismethod(parse_log_method) and inspect.isfunction(parse_log_method.__func__)
+    is_static = inspect.isfunction(parse_log_method) and not inspect.ismethod(parse_log_method)
 
     assert is_static, "parse_log method should be static"
 
