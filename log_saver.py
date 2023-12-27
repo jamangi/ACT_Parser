@@ -1,6 +1,7 @@
 import os
 import sqlite3
 from decouple import config
+from datetime import datetime
 
 
 def find_logfiles(string_path: str) -> (str, int):
@@ -134,6 +135,20 @@ class LogDatabase:
         # Create dictionary of attributes
         parsed_log = {'datetime': time, 'timezone': timezone, 'channel_code': channel_code, 'author': author, 'content': content}
         return parsed_log
+
+    @staticmethod
+    def string_to_time(date_string):
+        """Takes string-formatted time taken from ACT log and converts it to
+        datetime format so that we can do operations to account for time zones"""
+        time = datetime.strptime(date_string, '%Y-%m-%dT%H:%M:%S')
+        return time
+
+    @staticmethod
+    def time_to_string(time):
+        """Takes datetime-formatted time and converts it to a nice friendly string we can put wherever we want"""
+        date_string = time.strftime('%Y-%m-%dT%H:%M:%S')
+        return date_string
+
 
 
 # Example usage:
