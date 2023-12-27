@@ -30,6 +30,16 @@ class LogDatabase:
         self.conn = sqlite3.connect(self.db_path)
 
     @staticmethod
+    def add_channel(log_dict, other_user=None):
+        """docstring"""
+        code = log_dict['channel_code']
+        if not other_user and (code == '000C' or code == '000D'):
+            raise ValueError("Tells passed to LogDatabase.add_channel must be accompanied by an other_user kwarg.")
+        channel = LogDatabase.code_to_channel(other_user, code=code)
+        log_dict['channel'] = channel
+        return log_dict
+
+    @staticmethod
     def code_to_channel(other_user="nobody", code="nothing"):
         """Retrieves and returns a descriptive label for a given channel code.
 
@@ -114,7 +124,13 @@ class LogDatabase:
 # Example usage:
 if __name__ == "__main__":
     # Creating an instance of LogDatabase
-    log_db = LogDatabase("ffxiv_logger.db")
-
-    # Creating the table
-    log_db.create_log_file_table()
+    # log_db = LogDatabase("ffxiv_logger.db")
+    #
+    # # Creating the table
+    # log_db.create_log_file_table()
+    print(LogDatabase.add_channel({
+        'datetime': '2023-12-20T15:34:55',
+        'timezone': '-05:00',
+        'channel_code': '000C',
+        'author': 'Pablo Martinez',
+        'content': "lel"}, 'Pablo Martinez'))

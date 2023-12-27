@@ -29,7 +29,7 @@ def test_add_channel():
         'author': 'Some User',
         'content': "lel",
     }
-    other_user = 'Another User'
+    other_user = 'Some User'
     expected_log_channel_c_other_user = {
         'datetime': '2023-12-20T15:34:55',
         'timezone': '-05:00',
@@ -49,7 +49,7 @@ def test_add_channel():
         'author': 'Some User',
         'content': "lel",
     }
-    other_user = 'Another User'
+    other_user = 'Some User'
     expected_log_channel_d_other_user = {
         'datetime': '2023-12-20T15:34:55',
         'timezone': '-05:00',
