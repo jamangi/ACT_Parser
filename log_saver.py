@@ -31,7 +31,22 @@ class LogDatabase:
 
     @staticmethod
     def add_channel(log_dict, other_user=None):
-        """docstring"""
+        """
+        Add channel information to the log metadata dictionary.
+
+        Parameters:
+        - log_dict (dict): The log dictionary to which channel information will be added.
+        - other_user (str, optional): The name of the other user involved in a tell. Needed only for tells.
+
+        Raises:
+        - ValueError: If `other_user` is not provided when the channel code is '000C' or '000D'.
+
+        Returns:
+        dict: The updated log dictionary with the 'channel' key added.
+
+        Note:
+        The channel information is determined based on the channel code in the log dictionary.
+        """
         code = log_dict['channel_code']
         if not other_user and (code == '000C' or code == '000D'):
             raise ValueError("Tells passed to LogDatabase.add_channel must be accompanied by an other_user kwarg.")
