@@ -56,6 +56,60 @@ class LogDatabase:
         return log_dict
 
     @staticmethod
+    def check_datetime_format(time_string):
+        """Checks whether a datetime string is formatted correctly. Example of a valid time: '2023-12-21T06:52:50'.
+        Returns True if valid and False if not valid."""
+        try:
+            # Split into year, month, day, hour, minute, second. If anything fails, the string was formatted wrong
+            date, time = time_string.split('T')
+            year, month, day = date.split('-')
+            hour, minute, second = time.split(':')
+
+            date_len_check, time_len_check, date_num_check, time_num_check = False, False, False, False
+
+            # Check whether each parameter has the right number of digits
+            if len(year) == 4 and len(month) == 2 and len(day) == 2:
+                date_len_check = True
+            if len(hour) == 2 and len(minute) == 2 and len(second) == 2:
+                time_len_check = True
+
+            # Check whether the year and month are realistic:
+            year_check, month_check, day_check = False, False, False
+            if 2010 <= int(year) <= 2100:
+                year_check = True
+            if 1 <= int(month) <= 12:
+                month_check = True
+
+            # Check whether the day is realistic:
+            days_in_each_month = {1: 31, 2: 29, 3: 31, 4: 30, 5: 31, 6: 30, 7: 31, 8: 31, 9: 30, 10: 31, 11: 30, 12: 31}
+            if 1 <= int(day) <= days_in_each_month[int(month)]:
+                day_check = True
+            if month == '02' and day == '29' and int(year) % 4 != 0:  # February 29th valid only on leap years
+                day_check = False
+
+            if year_check and month_check and day_check:
+                date_num_check = True
+
+            # Check whether the time entries are realistic:
+            hour_check, minute_check, second_check = False, False, False
+            if 0 <= int(hour) <= 23:
+                hour_check = True
+            if 0 <= int(minute) <= 59:
+                minute_check = True
+            if 0 <= int(second) <= 59:
+                second_check = True
+            if hour_check and minute_check and second_check:
+                time_num_check = True
+        except ValueError:
+            return False
+
+        # Return True if all tests were passed. Return False otherwise
+        if date_len_check and time_len_check and date_num_check and time_num_check:
+            return True
+        else:
+            return False
+
+    @staticmethod
     def code_to_channel(other_user="nobody", code="nothing"):
         """Retrieves and returns a descriptive label for a given channel code.
 
@@ -150,17 +204,10 @@ class LogDatabase:
         return date_string
 
 
-
 # Example usage:
 if __name__ == "__main__":
     # Creating an instance of LogDatabase
-    # log_db = LogDatabase("ffxiv_logger.db")
-    #
-    # # Creating the table
-    # log_db.create_log_file_table()
-    print(LogDatabase.add_channel({
-        'datetime': '2023-12-20T15:34:55',
-        'timezone': '-05:00',
-        'channel_code': '000C',
-        'author': 'Pablo Martinez',
-        'content': "lel"}, 'Pablo Martinez'))
+    log_db = LogDatabase("ffxiv_logger.db")
+
+    # Creating the table
+    log_db.create_log_file_table()
