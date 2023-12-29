@@ -1,7 +1,7 @@
 import os
 import sqlite3
 from decouple import config
-from datetime import datetime
+from datetime import datetime, timedelta
 
 
 def find_logfiles(string_path: str) -> (str, int):
@@ -246,6 +246,16 @@ class LogDatabase:
         """Takes datetime-formatted time and converts it to a nice friendly string we can put wherever we want"""
         date_string = time.strftime('%Y-%m-%dT%H:%M:%S')
         return date_string
+
+    @staticmethod
+    def time_to_cst(datetime_local, offset_hours_from_gmt):
+        """Convert from local time to CST time
+        input: local time (datetime format), offset hours from GMT (float)
+        output: time in cst (datetime format)"""
+        gmt_to_cst = -6
+        offset_hours_from_cst = offset_hours_from_gmt - gmt_to_cst
+        datetime_cst = datetime_local + timedelta(hours=offset_hours_from_cst)
+        return datetime_cst
 
 
 # Example usage:
