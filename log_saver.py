@@ -81,11 +81,11 @@ class LogDatabase:
                 month_check = True
 
             # Check whether the day is realistic:
-            days_in_each_month = {1: 31, 2: 29, 3: 31, 4: 30, 5: 31, 6: 30, 7: 31, 8: 31, 9: 30, 10: 31, 11: 30, 12: 31}
+            days_in_each_month = {1: 31, 2: 28, 3: 31, 4: 30, 5: 31, 6: 30, 7: 31, 8: 31, 9: 30, 10: 31, 11: 30, 12: 31}
             if 1 <= int(day) <= days_in_each_month[int(month)]:
                 day_check = True
-            if month == '02' and day == '29' and int(year) % 4 != 0:  # February 29th valid only on leap years
-                day_check = False
+            if month == '02' and day == '29' and int(year) % 4 == 0:  # February 29th valid only on leap years
+                day_check = True
 
             if year_check and month_check and day_check:
                 date_num_check = True
@@ -111,14 +111,14 @@ class LogDatabase:
 
     @staticmethod
     def code_to_channel(other_user="nobody", code="nothing"):
-        """Retrieves and returns a descriptive label for a given channel code.
+        """Retrieves and returns the name of the channel corresponding to a given channel code.
 
         Parameters:
         - code (str): The channel code to be looked up.
         - other_user (str): The username of the other user involved in the channel communication.
 
         Returns:
-        str: A descriptive label corresponding to the input channel code, or "unrecognized" if the code is not found."""
+        str: The channel name corresponding to the input channel code, or "unrecognized" if the code is not found."""
 
         CHANNEL_CODES = {
             "000E": "Party",
