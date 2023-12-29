@@ -163,6 +163,31 @@ class LogDatabase:
             self.conn.close()
 
     @staticmethod
+    def offset_hours_to_string(offset_hours):
+        """Takes a float timezone hour offset and converts it to a string. For example, -6.5 becomes '-06:30'."""
+        # Split full hours from minutes
+        offset_full_hours = int(offset_hours)
+        offset_minutes_decimal = offset_hours - offset_full_hours
+
+        # Convert hours to string. Make sure the hours have a 0 in front if they're single-digit and a + if positive
+        offset_full_hours_string = str(offset_full_hours)
+        if -10 < offset_full_hours < 10:
+            offset_full_hours_string = offset_full_hours_string[:-1] + '0' + offset_full_hours_string[-1]
+        if offset_hours > 0:
+            offset_full_hours_string = '+' + offset_full_hours_string
+
+        # Convert minutes to string. Make sure it's two-digit
+        offset_minutes = int(abs(offset_minutes_decimal * 60))
+        offset_minutes_rounded = round(offset_minutes, -1)
+        offset_minutes_string = str(offset_minutes_rounded)
+        if len(offset_minutes_string) < 2:
+            offset_minutes_string += '0'
+
+        # Join strings and return full timezone offset string
+        offset_hours_string = offset_full_hours_string + ':' + offset_minutes_string
+        return offset_hours_string
+
+    @staticmethod
     def parse_log(log_text):
         """Parses a line from the logs to extract:
         1) Time in perspective time zone (not necessarily CST)
@@ -189,6 +214,25 @@ class LogDatabase:
         # Create dictionary of attributes
         parsed_log = {'datetime': time, 'timezone': timezone, 'channel_code': channel_code, 'author': author, 'content': content}
         return parsed_log
+
+    @staticmethod
+    def string_to_offset_hours(input_string):
+        """Takes a string time zone formatted like '-06:30' and converts it to a float number of hours, in this case
+        -6.5"""
+        # Split full hours (before the :) from minutes (after the :). Minutes need to be converted to decimal
+        offset_full_hours, offset_minutes = input_string.split(':')
+
+        # Convert hours to int. Convert minute strings to decimal, for example '30' to .5
+        offset_full_hours = int(offset_full_hours)
+        offset_minutes_decimal = int(offset_minutes)/60
+
+        # Add minutes to offset now that they've been converted to be compatible
+        offset_hours = 0
+        if offset_full_hours >= 0:
+            offset_hours = offset_full_hours + offset_minutes_decimal
+        elif offset_full_hours < 0:
+            offset_hours = offset_full_hours - offset_minutes_decimal
+        return offset_hours
 
     @staticmethod
     def string_to_time(date_string):
