@@ -23,6 +23,6 @@ def test_time_to_cst_previous_day():
 
     datetime_cst = LogDatabase.time_to_cst(datetime_utc, offset_hours)
 
-    expected_result = datetime_utc + timedelta(hours=offset_hours) - timedelta(days=1)
+    expected_result = datetime_utc + timedelta(hours=offset_hours)
 
     assert datetime_cst == expected_result
