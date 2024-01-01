@@ -57,8 +57,13 @@ class LogDatabase:
 
     @staticmethod
     def add_datetime_cst(log_dict):
-        """docstring"""
-        # Find out what the local datetime and timezone were and convert to CST
+        """Add a datetime_cst key and value to the dict containing the metadata for a message. Returns the input
+        dictionary with an added datetime_cst entry. CST datetime is calculated using the time_to_cst static method.
+        Before conversion, the metadata's 'datetime' entry (representing the local datetime for the perspective user)
+        is checked to see if it exists and is formatted correctly, and the 'timezone' entry (representing the
+        perspective user's offset from GMT) is checked to make sure it exists."""
+        # Find out what the local datetime and timezone were. Check to make sure they're present and formatted right.
+        # Convert local datetime to datetime and timezone offset to float.
         if 'datetime' not in log_dict.keys():
             raise ValueError("Local datetime is missing from the log's metadata.")
         if not LogDatabase.check_datetime_format(log_dict['datetime']):
@@ -68,6 +73,8 @@ class LogDatabase:
             timezone = LogDatabase.string_to_offset_hours(log_dict['timezone'])
         except KeyError:
             raise ValueError('No timezone found in log metadata.')
+
+        # Take the local time and find the equivalent time in CST as a string, datetime_cst
         datetime_cst_datetime = LogDatabase.time_to_cst(local_datetime, timezone)
         datetime_cst = LogDatabase.time_to_string(datetime_cst_datetime)
 
@@ -181,6 +188,16 @@ class LogDatabase:
     def __del__(self):
         if self.conn:
             self.conn.close()
+
+    @staticmethod
+    def fix_author(log_dict):
+        """For when the message is a tell from the perspective user to another user: Changes the 'author' in the
+        message log metadata to the perspective user's username"""
+        if 'channel_code' not in log_dict.keys():
+            return log_dict
+        if log_dict['channel_code'] == '000C':
+            log_dict['author'] = LogDatabase.username
+        return log_dict
 
     @staticmethod
     def offset_hours_to_string(offset_hours):
