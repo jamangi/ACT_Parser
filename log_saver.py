@@ -56,6 +56,26 @@ class LogDatabase:
         return log_dict
 
     @staticmethod
+    def add_datetime_cst(log_dict):
+        """docstring"""
+        # Find out what the local datetime and timezone were and convert to CST
+        if 'datetime' not in log_dict.keys():
+            raise ValueError("Local datetime is missing from the log's metadata.")
+        if not LogDatabase.check_datetime_format(log_dict['datetime']):
+            raise ValueError("The local datetime in the log's metadata is formatted incorrectly.")
+        local_datetime = LogDatabase.string_to_time(log_dict['datetime'])
+        try:
+            timezone = LogDatabase.string_to_offset_hours(log_dict['timezone'])
+        except KeyError:
+            raise ValueError('No timezone found in log metadata.')
+        datetime_cst_datetime = LogDatabase.time_to_cst(local_datetime, timezone)
+        datetime_cst = LogDatabase.time_to_string(datetime_cst_datetime)
+
+        # Add datetime_cst to the dict and return it
+        log_dict['datetime_cst'] = datetime_cst
+        return log_dict
+
+    @staticmethod
     def check_datetime_format(time_string):
         """Checks whether a datetime string is formatted correctly. Example of a valid time: '2023-12-21T06:52:50'.
         Returns True if valid and False if not valid."""
@@ -253,7 +273,7 @@ class LogDatabase:
         input: local time (datetime format), offset hours from GMT (float)
         output: time in cst (datetime format)"""
         gmt_to_cst = -6
-        offset_hours_from_cst = offset_hours_from_gmt - gmt_to_cst
+        offset_hours_from_cst = gmt_to_cst - offset_hours_from_gmt
         datetime_cst = datetime_local + timedelta(hours=offset_hours_from_cst)
         return datetime_cst
 
