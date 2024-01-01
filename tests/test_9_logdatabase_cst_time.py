@@ -12,6 +12,6 @@ def test_time_to_cst_with_real_number_offset():
 
     # Calculate the expected CST time based on user's offset
     cst_offset_hours = -6.0  # CST is UTC-6
-    expected_result = datetime_local + timedelta(hours=user_offset_hours_from_gmt - cst_offset_hours)
+    expected_result = datetime_local + timedelta(hours=cst_offset_hours - user_offset_hours_from_gmt)
 
     assert datetime_cst == expected_result
