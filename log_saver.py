@@ -147,7 +147,7 @@ class LogDatabase:
         Returns:
         str: The channel name corresponding to the input channel code, or "unrecognized" if the code is not found."""
 
-        CHANNEL_CODES = {
+        channel_codes = {
             "000E": "Party",
             "001D": "Emote",
             "003C": "Error Message",
@@ -157,8 +157,8 @@ class LogDatabase:
             "001E": "Yell",
             "000A": "Say"
         }
-        if code in CHANNEL_CODES:
-            return CHANNEL_CODES[code]
+        if code in channel_codes:
+            return channel_codes[code]
         else:
             return "unrecognized"
 
@@ -202,10 +202,11 @@ class LogDatabase:
     @staticmethod
     def fix_log(act_log_dict):
         """Adds information to the metadata for a message obtained from the ACT logs. This is to make the information
-        more immediately relevant to humans. The changes are as follows:
-        - Add cst_datetime, datetime converted to CST for easy standardization
+        more easily understandable for humans. The changes are as follows:
+        - Add cst_datetime, datetime converted to CST for easy standardization and log-keeping
         - Put channel information in human terms
-        - Adjust author metadata so that it always corresponds to the person who sent the message
+        - Adjust author metadata so that it always corresponds to the person who sent the message. This is important
+          for the case where the user sends a tell; the receiver is then named as the author in the ACT logs
 
         Input: Metadata from the ACT log as parsed by parse_log
 
@@ -227,17 +228,18 @@ class LogDatabase:
         return log_dict
 
     def insert_log(self, **kwargs):
-        """        Inserts a message and all its metadata into the logs table.
+        """Inserts a message and all its metadata into the logs table.
 
         :param kwargs: dict keys and values for a message's metadata. Includes: datetime, timezone, datetime_cst,
-        channel_code, channel, author, content"""
-
+        channel_code, channel, author, content. Currently gets read as a dict instead of the variables being unpacked.
+        """
         message_metadata = kwargs
 
         # Make sure the input metadata dict isn't empty
         if len(message_metadata) == 0:
             raise ValueError('No data provided for insertion')
         elif len(message_metadata) < 7:
+
             # Insert '???' for missing fields in the message metadata, in case that data wasn't input for some reason
             missing_fields_dict = {
                 'datetime': '???',
@@ -246,7 +248,7 @@ class LogDatabase:
                 'channel_code': '???',
                 'channel': '???',
                 'author': '???',
-                'content': "???",
+                'content': '???',
             }
             message_metadata = missing_fields_dict | message_metadata
 
@@ -265,13 +267,13 @@ class LogDatabase:
             VALUES 
                 (?, ?, ?, ?, ?, ?, ?)
         """, (
-              message_metadata['datetime'],  # Order of inputs is determined in create_logs_table
-              message_metadata['timezone'],
-              message_metadata['datetime_cst'],
-              message_metadata['author'],
-              message_metadata['channel_code'],
-              message_metadata['channel'],
-              message_metadata['content']))
+            message_metadata['datetime'],  # Order of inputs is determined in create_logs_table
+            message_metadata['timezone'],
+            message_metadata['datetime_cst'],
+            message_metadata['author'],
+            message_metadata['channel_code'],
+            message_metadata['channel'],
+            message_metadata['content']))
 
         # self.conn.commit()
 
@@ -303,10 +305,10 @@ class LogDatabase:
     @staticmethod
     def parse_log(log_text):
         """Parses a line from the logs to extract:
-        1) Time in perspective time zone (not necessarily CST)
-        2) Time zone in hours from GMT
-        3) Channel code (for example 000E for party chat)
-        4) Author (or recipient if channel code is 000C, tell to)
+        1) Time in user's time zone (not necessarily CST)
+        2) User's time zone in hours from GMT
+        3) Channel code used by ACT (for example 000E for party chat)
+        4) Author (or recipient if channel code is 000C: tell to)
         5) Content
 
         Input: str -- line of log text
@@ -324,8 +326,13 @@ class LogDatabase:
         author = log_list[3]
         content = log_list[4]
 
-        # Create dictionary of attributes
-        parsed_log = {'datetime': time, 'timezone': timezone, 'channel_code': channel_code, 'author': author, 'content': content}
+        # Create dictionary of attributes and return it
+        parsed_log = {
+            'datetime': time,
+            'timezone': timezone,
+            'channel_code': channel_code,
+            'author': author,
+            'content': content}
         return parsed_log
 
     @staticmethod
