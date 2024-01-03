@@ -21,7 +21,7 @@ def test_insert_log_full_log():
     cursor = log_db.conn.cursor()
     query = """
             SELECT datetime, timezone, datetime_cst, channel_code, channel, author, content
-            FROM logs
+            FROM logs 
         """
     cursor.execute(query)
     result = cursor.fetchone()
