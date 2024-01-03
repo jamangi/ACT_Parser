@@ -226,6 +226,44 @@ class LogDatabase:
 
         return log_dict
 
+    def insert_log(self, **kwargs):
+        """        Inserts a message and all its metadata into the logs table.
+
+        :param kwargs: dict keys and values for a message's metadata. Includes: datetime, timezone, datetime_cst,
+        channel_code, channel, author, content"""
+
+        message_metadata = kwargs
+
+        # Insert '???' for missing fields in the message metadata, in case that data wasn't input for some reason
+        missing_fields_dict = {
+            'datetime': '???',
+            'timezone': '???',
+            'datetime_cst': '???',
+            'channel_code': '???',
+            'channel': '???',
+            'author': '???',
+            'content': "???",
+        }
+        message_metadata = missing_fields_dict | message_metadata
+
+        # Insert message into logs table
+        cursor = self.conn.cursor()
+        cursor.execute("""
+            INSERT INTO 
+                logs
+            VALUES 
+                (?, ?, ?, ?, ?, ?, ?)
+        """, (
+              message_metadata['datetime'],
+              message_metadata['timezone'],
+              message_metadata['datetime_cst'],
+              message_metadata['author'],
+              message_metadata['channel_code'],
+              message_metadata['channel'],
+              message_metadata['content']))
+
+        # self.conn.commit()
+
     @staticmethod
     def offset_hours_to_string(offset_hours):
         """Takes a float timezone hour offset and converts it to a string. For example, -6.5 becomes '-06:30'."""
