@@ -7,14 +7,14 @@ def test_fix_log():
     log_dict_channel_c = {
         'datetime': '2023-12-20T15:34:54',
         'timezone': '-02:00',
-        'channel_code': '000C',
+        'channel_code': '000D',
         'author': 'Ussoo Ku',
         'content': "I've chatting a lot of ppl, and not everyone is a chatter",
     }
     expected_fixed_log_c = {
         'datetime': '2023-12-20T15:34:54',
         'timezone': '-02:00',
-        'channel_code': '000C',
+        'channel_code': '000D',
         'author': LogDatabase.username,
         'content': "I've chatting a lot of ppl, and not everyone is a chatter",
         'datetime_cst': '2023-12-20T11:34:54',
@@ -26,14 +26,14 @@ def test_fix_log():
     log_dict_channel_d = {
         'datetime': '2023-12-20T15:34:55',
         'timezone': '-05:00',
-        'channel_code': '000D',
+        'channel_code': '000C',
         'author': 'Some User',
         'content': "lel",
     }
     expected_fixed_log_d = {
         'datetime': '2023-12-20T15:34:55',
         'timezone': '-05:00',
-        'channel_code': '000D',
+        'channel_code': '000C',
         'author': LogDatabase.username,
         'content': "lel",
         'datetime_cst': '2023-12-20T14:34:55',
