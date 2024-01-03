@@ -200,6 +200,33 @@ class LogDatabase:
         return log_dict
 
     @staticmethod
+    def fix_log(act_log_dict):
+        """Adds information to the metadata for a message obtained from the ACT logs. This is to make the information
+        more immediately relevant to humans. The changes are as follows:
+        - Add cst_datetime, datetime converted to CST for easy standardization
+        - Put channel information in human terms
+        - Adjust author metadata so that it always corresponds to the person who sent the message
+
+        Input: Metadata from the ACT log as parsed by parse_log
+
+        Output: The same metadata with more info as described above"""
+
+        # Add 'datetime_cst', the datetime in CST, to the dict
+        log_dict = LogDatabase.add_datetime_cst(act_log_dict)
+
+        # Add channel, the human-readable channel info, to the dict
+        if log_dict['channel_code'] == '000C' or log_dict['channel_code'] == '000D':
+            other_user = log_dict['author']
+        else:
+            other_user = None
+        log_dict = LogDatabase.add_channel(log_dict, other_user)
+
+        # Fix author information to match sender in the case where the perspective character sends a tell
+        log_dict = LogDatabase.fix_author(log_dict)
+
+        return log_dict
+
+    @staticmethod
     def offset_hours_to_string(offset_hours):
         """Takes a float timezone hour offset and converts it to a string. For example, -6.5 becomes '-06:30'."""
         # Split full hours from minutes
