@@ -234,17 +234,28 @@ class LogDatabase:
 
         message_metadata = kwargs
 
-        # Insert '???' for missing fields in the message metadata, in case that data wasn't input for some reason
-        missing_fields_dict = {
-            'datetime': '???',
-            'timezone': '???',
-            'datetime_cst': '???',
-            'channel_code': '???',
-            'channel': '???',
-            'author': '???',
-            'content': "???",
-        }
-        message_metadata = missing_fields_dict | message_metadata
+        # Make sure the input metadata dict isn't empty
+        if len(message_metadata) == 0:
+            raise ValueError('No data provided for insertion')
+        elif len(message_metadata) < 7:
+            # Insert '???' for missing fields in the message metadata, in case that data wasn't input for some reason
+            missing_fields_dict = {
+                'datetime': '???',
+                'timezone': '???',
+                'datetime_cst': '???',
+                'channel_code': '???',
+                'channel': '???',
+                'author': '???',
+                'content': "???",
+            }
+            message_metadata = missing_fields_dict | message_metadata
+
+        # Make sure datetime and datetime_cst are correctly formatted,
+        # or else how are we supposed to know when anything happened?
+        if not LogDatabase.check_datetime_format(message_metadata['datetime']):
+            raise ValueError("Invalid datetime format for 'datetime' field")
+        if not LogDatabase.check_datetime_format(message_metadata['datetime_cst']):
+            raise ValueError("Invalid datetime format for 'datetime_cst' field")
 
         # Insert message into logs table
         cursor = self.conn.cursor()
@@ -254,7 +265,7 @@ class LogDatabase:
             VALUES 
                 (?, ?, ?, ?, ?, ?, ?)
         """, (
-              message_metadata['datetime'],
+              message_metadata['datetime'],  # Order of inputs is determined in create_logs_table
               message_metadata['timezone'],
               message_metadata['datetime_cst'],
               message_metadata['author'],
