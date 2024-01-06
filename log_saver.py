@@ -252,8 +252,12 @@ class LogDatabase:
             }
             message_metadata = missing_fields_dict | message_metadata
 
-        # Make sure datetime and datetime_cst are correctly formatted,
+        # Make sure datetime and datetime_cst exist and are correctly formatted,
         # or else how are we supposed to know when anything happened?
+        if message_metadata['datetime'] == '???':
+            raise ValueError("Missing 'datetime' field")
+        if message_metadata['datetime_cst'] == '???':
+            raise ValueError("Missing 'datetime_cst' field")
         if not LogDatabase.check_datetime_format(message_metadata['datetime']):
             raise ValueError("Invalid datetime format for 'datetime' field")
         if not LogDatabase.check_datetime_format(message_metadata['datetime_cst']):
