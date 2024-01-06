@@ -171,6 +171,8 @@ class LogDatabase:
             )
         ''')
 
+        cursor.close()
+
     def create_logs_table(self):
         cursor = self.conn.cursor()
         cursor.execute('''
@@ -184,6 +186,8 @@ class LogDatabase:
                 content TEXT
             )
         ''')
+
+        cursor.close()
 
     def __del__(self):
         if self.conn:
@@ -280,6 +284,7 @@ class LogDatabase:
             message_metadata['content']))
 
         # self.conn.commit()
+        cursor.close()
 
     @staticmethod
     def offset_hours_to_string(offset_hours):
