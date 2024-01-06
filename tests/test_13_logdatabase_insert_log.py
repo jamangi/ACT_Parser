@@ -29,6 +29,39 @@ def test_insert_log_full_log():
     assert result == tuple(test_insert_data.values())
 
 
+def test_missing_data_with_correct_dates():
+    log_db = LogDatabase(":memory:")
+    log_db.create_logs_table()
+
+    test_insert_data = {
+        'datetime': '2023-12-20T15:34:54',
+        'datetime_cst': '2023-12-20T14:34:54',
+        'author': 'Ussoo Ku',
+        'content': "I've chatting a lot of ppl, and not everyone is a chatter",
+    }
+    log_db.insert_log(**test_insert_data)
+
+    cursor = log_db.conn.cursor()
+    query = """
+                SELECT datetime, timezone, datetime_cst, channel_code, channel, author, content
+                FROM logs
+            """
+    cursor.execute(query)
+    result = cursor.fetchone()
+
+    expected_result = (
+        '2023-12-20T15:34:54',
+        '???',  # Default value for timezone
+        '2023-12-20T14:34:54',
+        '???',  # Default value for channel_code
+        '???',  # Default value for channel
+        'Ussoo Ku',
+        "I've chatting a lot of ppl, and not everyone is a chatter",
+    )
+
+    assert result == expected_result
+
+
 def test_insert_missing_datetime_cst():
     log_db = LogDatabase(":memory:")
     log_db.create_logs_table()
