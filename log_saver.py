@@ -2,6 +2,7 @@ import os
 import sqlite3
 from decouple import config
 from datetime import datetime, timedelta
+from pathlib import Path
 
 
 def find_logfiles(string_path: str) -> (str, int):
@@ -23,8 +24,27 @@ def find_logfiles(string_path: str) -> (str, int):
     return logfiles
 
 
+def read_logfiles(filelist):
+    """
+    Reads the lines of each file and puts the lines in a single list
+
+    :param filelist: a list of file paths
+    :return: list of text lines
+    """
+    res = []
+    for file in filelist:
+        with open(file, 'r') as fp:
+            lines = fp.readlines()
+            for line in lines:
+                res.append(line.strip('\n'))
+    return res
+
+
 class LogDatabase:
     username = config("FF_USERNAME", default="Haltise El Yokade")  # default is for testing
+    home_dir = Path.home()
+    logs_dir = home_dir / "AppData" / "Roaming" / "Advanced Combat Tracker" / "FFXIVLogs"
+    db_name = "ffxiv_logger.db"
 
     def __init__(self, db_path):
         self.db_path = db_path
