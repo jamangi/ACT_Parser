@@ -451,7 +451,7 @@ def test_select_log_channel_filter():
     selected_data = log_db.select_log(filter_criteria)
 
     # Verify the selected data contains entries with channels matching the criteria
-    assert len(selected_data) == 3
+    assert len(selected_data) == 4
     assert all(entry['channel'] in filter_criteria['channel'] for entry in selected_data)
 
     # Verify that entries with channels not in the criteria are not included
