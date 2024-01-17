@@ -171,6 +171,8 @@ class LogDatabase:
             )
         ''')
 
+        cursor.close()
+
     def create_logs_table(self):
         cursor = self.conn.cursor()
         cursor.execute('''
@@ -184,6 +186,8 @@ class LogDatabase:
                 content TEXT
             )
         ''')
+
+        cursor.close()
 
     def __del__(self):
         if self.conn:
@@ -280,6 +284,7 @@ class LogDatabase:
             message_metadata['content']))
 
         # self.conn.commit()
+        cursor.close()
 
     @staticmethod
     def offset_hours_to_string(offset_hours):
@@ -338,6 +343,41 @@ class LogDatabase:
             'author': author,
             'content': content}
         return parsed_log
+
+    def select_log(self, filter_criteria):
+        """Find all messages in the logs table that match the given filter criteria. Any message metadata may be
+        used as filter criteria, but it must be formatted correctly.
+
+        :param filter_criteria: dict containing filter criteria used to select the appropriate message in the table.
+        :return: list of dicts. Each dict corresponds to a message that matches the filter criteria. The dict contains
+        all data relevant to that message.
+        """
+        cursor = self.conn.cursor()
+
+        # Prepare filter criteria for insertion into SQLite query string. Example: 'datetime = "2023-12-20T15:34:54"'
+        filters = []
+        for criterion in filter_criteria:
+            filters.append(f"""{criterion} = "{filter_criteria[criterion][0]}""" + '"')
+
+        # Create query string from filter criteria. Example: SELECT * FROM logs WHERE datetime = "2023-12-20T15:34:54"
+        query = """SELECT * FROM logs"""
+        if len(filters):
+            query += ' WHERE ' + ' AND '.join(filters)
+
+        # Execute query
+        search_results = cursor.execute(query)
+
+        # Format the search results as a list of dicts, then return them
+        results_list = [{'datetime': logged_message_metadata[0],
+                         'timezone': logged_message_metadata[1],
+                         'datetime_cst': logged_message_metadata[2],
+                         'author': logged_message_metadata[3],
+                         'channel_code': logged_message_metadata[4],
+                         'channel': logged_message_metadata[5],
+                         'content': logged_message_metadata[6]}
+                        for logged_message_metadata in search_results]
+        cursor.close()
+        return results_list
 
     @staticmethod
     def string_to_offset_hours(input_string):

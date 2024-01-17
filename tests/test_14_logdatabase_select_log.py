@@ -4,6 +4,7 @@ from log_saver import LogDatabase  # Replace with the correct import
 def test_select_log():
     # Setup: Create a LogDatabase instance
     log_db = LogDatabase(":memory:")
+    log_db.create_logs_table()
 
     # Insert test data
     test_data = [
@@ -50,6 +51,7 @@ def test_select_log():
 def test_select_log_multiple_matches():
     # Setup: Create a LogDatabase instance
     log_db = LogDatabase(":memory:")
+    log_db.create_logs_table()
 
     # Insert test data
     test_data = [
@@ -103,6 +105,7 @@ def test_select_log_multiple_matches():
 def test_select_log_ordered_by_datetime_cst():
     # Setup: Create a LogDatabase instance
     log_db = LogDatabase(":memory:")
+    log_db.create_logs_table()
 
     # Insert test data with different datetime_cst values
     test_data = [
@@ -151,6 +154,7 @@ def test_select_log_ordered_by_datetime_cst():
 def test_select_log_or_functionality():
     # Setup: Create a LogDatabase instance
     log_db = LogDatabase(":memory:")
+    log_db.create_logs_table()
 
     # Insert test data with different authors
     test_data = [
@@ -199,6 +203,7 @@ def test_select_log_or_functionality():
 def test_select_log_no_filter():
     # Setup: Create a LogDatabase instance
     log_db = LogDatabase(":memory:")
+    log_db.create_logs_table()
 
     # Insert test data
     test_data = [
