@@ -50,8 +50,8 @@ def test_create_logs_table(temp_db):
     expected_columns = [
         (0, 'datetime', 'TEXT', 0, None, 0),
         (1, 'timezone', 'TEXT', 0, None, 0),
-        (2, 'datetime_cst', 'TEXT', 0, None, 0),
-        (3, 'author', 'TEXT', 0, None, 0),
+        (2, 'datetime_cst', 'TEXT', 0, None, 1),
+        (3, 'author', 'TEXT', 0, None, 2),
         (4, 'channel_code', 'TEXT', 0, None, 0),
         (5, 'channel', 'TEXT', 0, None, 0),
         (6, 'content', 'TEXT', 0, None, 0),
