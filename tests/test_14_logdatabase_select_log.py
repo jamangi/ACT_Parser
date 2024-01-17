@@ -142,7 +142,7 @@ def test_select_log_ordered_by_datetime_cst():
         log_db.insert_log(**data)
 
     # Test: Select data using select_log method with filter criteria
-    selected_data = log_db.select_log({"author": "Ussoo Ku"}, order_by='datetime_cst')
+    selected_data = log_db.select_log({"author": ["Ussoo Ku"]}, order_by='datetime_cst')
 
     # Verify the selected data is ordered by datetime_cst
     assert len(selected_data) == 2
