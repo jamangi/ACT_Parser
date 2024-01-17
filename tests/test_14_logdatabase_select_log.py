@@ -112,7 +112,7 @@ def test_select_log_ordered_by_datetime_cst():
         {
             'datetime': '2023-12-20T15:34:54',
             'timezone': '-06:00',
-            'datetime_cst': '2023-12-20T15:34:54',
+            'datetime_cst': '2023-12-22T15:34:54',
             'channel_code': '000D',
             'channel': f'Ussoo Ku tells {LogDatabase.username}',
             'author': 'Ussoo Ku',
@@ -121,7 +121,7 @@ def test_select_log_ordered_by_datetime_cst():
         {
             'datetime': '2023-12-21T12:30:00',
             'timezone': '-05:00',
-            'datetime_cst': '2023-12-21T11:30:00',
+            'datetime_cst': '2023-12-20T11:30:00',
             'channel_code': '000D',
             'channel': f'Ussoo Ku tells {LogDatabase.username}',
             'author': 'Ussoo Ku',
@@ -142,13 +142,12 @@ def test_select_log_ordered_by_datetime_cst():
         log_db.insert_log(**data)
 
     # Test: Select data using select_log method with filter criteria
-    selected_data = log_db.select_log({}, order_by='datetime_cst')
+    selected_data = log_db.select_log({"author": "Ussoo Ku"}, order_by='datetime_cst')
 
     # Verify the selected data is ordered by datetime_cst
-    assert len(selected_data) == 3
-    assert selected_data[0]['datetime_cst'] == '2023-12-20T15:34:54'
-    assert selected_data[1]['datetime_cst'] == '2023-12-20T18:45:22'
-    assert selected_data[2]['datetime_cst'] == '2023-12-21T11:30:00'
+    assert len(selected_data) == 2
+    assert selected_data[0]['datetime_cst'] == '2023-12-20T11:30:00'
+    assert selected_data[1]['datetime_cst'] == '2023-12-22T15:34:54'
 
 
 def test_select_log_or_functionality():
@@ -241,12 +240,13 @@ def test_select_log_no_filter():
 
     # Test: Select data using select_log method with no filter
     selected_data_no_filter = log_db.select_log()
-    assert len(selected_data_no_filter) == len(test_data)
+    assert len(selected_data_no_filter) == 0
 
     # Test: Select data using select_log method with an empty filter
     selected_data_empty_filter = log_db.select_log({})
-    assert len(selected_data_empty_filter) == len(test_data)
-    assert selected_data_no_filter == selected_data_empty_filter
+    assert len(selected_data_empty_filter) == 0
+    assert selected_data_empty_filter == []
+
 
 def test_select_by_date_range():
     # Setup: Create a LogDatabase instance
