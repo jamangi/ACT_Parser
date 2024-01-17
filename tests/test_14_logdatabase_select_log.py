@@ -384,3 +384,142 @@ def test_select_by_date_with_filter_intermediate():
     # Ensure the filter is applied to the result set
     assert all(entry['author'] == 'User1' for entry in selected_data_filtered)
     assert len(selected_data_filtered) == 1
+
+
+def test_select_log_channel_filter():
+    # Setup: Create a LogDatabase instance
+    log_db = LogDatabase(":memory:")
+    log_db.create_logs_table()
+
+    # Insert test data with different channels
+    test_data = [
+        {
+            'datetime': '2023-12-20T15:34:54',
+            'timezone': '-06:00',
+            'datetime_cst': '2023-12-20T09:34:54',
+            'channel_code': '000D',
+            'channel': 'Zena tells Ussoo Ku',
+            'author': 'Ussoo Ku',
+            'content': "Message from Ussoo Ku",
+        },
+        {
+            'datetime': '2023-12-21T12:30:00',
+            'timezone': '-05:00',
+            'datetime_cst': '2023-12-21T10:30:00',
+            'channel_code': '000C',
+            'channel': 'Haltise tells Lyon',
+            'author': 'Haltise',
+            'content': "Message from Haltise",
+        },
+        {
+            'datetime': '2023-12-20T18:45:22',
+            'timezone': '-06:00',
+            'datetime_cst': '2023-12-20T12:45:22',
+            'channel_code': '000E',
+            'channel': 'Party',
+            'author': 'Party User',
+            'content': "Party content",
+        },
+        {
+            'datetime': '2023-12-20T21:00:00',
+            'timezone': '-06:00',
+            'datetime_cst': '2023-12-20T15:00:00',
+            'channel_code': '000A',
+            'channel': 'Say',
+            'author': 'Say User',
+            'content': "Say something",
+        },
+        {
+            'datetime': '2023-12-21T08:15:00',
+            'timezone': '-05:00',
+            'datetime_cst': '2023-12-21T06:15:00',
+            'channel_code': '000B',
+            'channel': 'Shout',
+            'author': 'Shout User',
+            'content': "Shout it out",
+        },
+    ]
+
+    for data in test_data:
+        log_db.insert_log(**data)
+
+    # Test: Select data using select_log method with 'channel' filter criteria
+    filter_criteria = {'channel': ['Party', 'Tell', 'Say']}
+    selected_data = log_db.select_log(filter_criteria)
+
+    # Verify the selected data contains entries with channels matching the criteria
+    assert len(selected_data) == 3
+    assert all(entry['channel'] in filter_criteria['channel'] for entry in selected_data)
+
+    # Verify that entries with channels not in the criteria are not included
+    assert all(entry['channel'] not in ('Unknown', 'Shout') for entry in selected_data)
+
+
+def test_select_log_channel_filter_2():
+    # Setup: Create a LogDatabase instance
+    log_db = LogDatabase(":memory:")
+    log_db.create_logs_table()
+
+    # Insert test data with different channels
+    test_data = [
+        {
+            'datetime': '2023-12-20T15:34:54',
+            'timezone': '-06:00',
+            'datetime_cst': '2023-12-20T09:34:54',
+            'channel_code': '000D',
+            'channel': 'Sayaman tells Ussoo Ku',
+            'author': 'Ussoo Ku',
+            'content': "Message from Ussoo Ku",
+        },
+        {
+            'datetime': '2023-12-21T12:30:00',
+            'timezone': '-05:00',
+            'datetime_cst': '2023-12-21T10:30:00',
+            'channel_code': '000C',
+            'channel': 'Party tells Lyon',
+            'author': 'Party',
+            'content': "Message from Party",
+        },
+        {
+            'datetime': '2023-12-20T18:45:22',
+            'timezone': '-06:00',
+            'datetime_cst': '2023-12-20T12:45:22',
+            'channel_code': '000E',
+            'channel': 'Party',
+            'author': 'Party User',
+            'content': "Party content",
+        },
+        {
+            'datetime': '2023-12-20T21:00:00',
+            'timezone': '-06:00',
+            'datetime_cst': '2023-12-20T15:00:00',
+            'channel_code': '000A',
+            'channel': 'Say',
+            'author': 'Say User',
+            'content': "Say something",
+        },
+        {
+            'datetime': '2023-12-21T08:15:00',
+            'timezone': '-05:00',
+            'datetime_cst': '2023-12-21T06:15:00',
+            'channel_code': '000B',
+            'channel': 'Shout',
+            'author': 'Shout User',
+            'content': "Shout it out",
+        },
+    ]
+
+    for data in test_data:
+        log_db.insert_log(**data)
+
+    # Test: Select data using select_log method with 'channel' filter criteria
+    filter_criteria = {'channel': ['Party', 'Say']}
+    selected_data = log_db.select_log(filter_criteria)
+
+    # Verify the selected data contains entries with channels matching the criteria
+    assert len(selected_data) == 2
+    assert all(entry['channel'] in filter_criteria['channel'] for entry in selected_data)
+
+    # Verify that entries with channels not in the criteria are not included
+    assert all(entry['channel'] not in ('Unknown', 'Shout',
+                                        'Sayaman tells Ussoo Ku', 'Party tells Lyon') for entry in selected_data)
