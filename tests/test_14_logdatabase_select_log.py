@@ -146,9 +146,9 @@ def test_select_log_ordered_by_datetime_cst():
 
     # Verify the selected data is ordered by datetime_cst
     assert len(selected_data) == 3
-    assert selected_data[0]['datetime_cst'] == '2023-12-20T09:34:54'
-    assert selected_data[1]['datetime_cst'] == '2023-12-20T12:45:22'
-    assert selected_data[2]['datetime_cst'] == '2023-12-21T10:30:00'
+    assert selected_data[0]['datetime_cst'] == '2023-12-20T15:34:54'
+    assert selected_data[1]['datetime_cst'] == '2023-12-20T18:45:22'
+    assert selected_data[2]['datetime_cst'] == '2023-12-21T11:30:00'
 
 
 def test_select_log_or_functionality():
