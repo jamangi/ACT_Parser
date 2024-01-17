@@ -363,10 +363,14 @@ def test_select_by_date_with_filter_intermediate():
 
     # Insert test data
     test_data = [
-        {'datetime_cst': '2023-12-20T15:34:54', 'author': 'User1', 'content': 'Message 1'},
-        {'datetime_cst': '2023-12-20T15:35:00', 'author': 'User2', 'content': 'Message 2'},
-        {'datetime_cst': '2023-12-20T18:00:00', 'author': 'User1', 'content': 'Message 3'},
-        {'datetime_cst': '2023-12-20T17:00:00', 'author': 'User2', 'content': 'Message 4'},
+        {'datetime': '2023-12-20T15:34:54', 'datetime_cst': '2023-12-20T15:34:54', 'author': 'User1',
+         'content': 'Message 1'},
+        {'datetime': '2023-12-20T15:35:00', 'datetime_cst': '2023-12-20T15:35:00', 'author': 'User2',
+         'content': 'Message 2'},
+        {'datetime': '2023-12-20T18:00:00', 'datetime_cst': '2023-12-20T18:00:00', 'author': 'User1',
+         'content': 'Message 3'},
+        {'datetime': '2023-12-20T17:00:00', 'datetime_cst': '2023-12-20T17:00:00', 'author': 'User2',
+         'content': 'Message 4'},
     ]
 
     for data in test_data:
@@ -381,7 +385,7 @@ def test_select_by_date_with_filter_intermediate():
     selected_data_filtered = log_db.select_log(
         start_datetime_cst=start_datetime_cst,
         end_datetime_cst=end_datetime_cst,
-        filter=filter_criteria
+        filter_criteria=filter_criteria
     )
 
     # Ensure the filter is applied to the result set
