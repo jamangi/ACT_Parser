@@ -206,12 +206,12 @@ class LogDatabase:
 
     @staticmethod
     def fix_log(act_log_dict):
-        """Adds information to the metadata for a message obtained from the ACT logs. This is to make the information
+        """Adds more metadata to a message obtained from the ACT logs. This is to make the information
         more easily understandable for humans. The changes are as follows:
-        - Add cst_datetime, datetime converted to CST for easy standardization and log-keeping
+        - Add datetime_cst, datetime converted to CST for easy standardization and log-keeping
         - Put channel information in human terms
         - Adjust author metadata so that it always corresponds to the person who sent the message. This is important
-          for the case where the user sends a tell; the receiver is then named as the author in the ACT logs
+          for the case where the user sends a tell; in the ACT logs, the receiver is named as the author in this case
 
         Input: Metadata from the ACT log as parsed by parse_log
 
@@ -345,7 +345,7 @@ class LogDatabase:
             'content': content}
         return parsed_log
 
-    def select_log(self, filter_criteria={},
+    def select_log(self, filter_criteria=None,
                    order_by='datetime_cst',
                    start_datetime_cst=None, end_datetime_cst=None):
         """Find all messages in the logs table that match the given filter criteria. Any message metadata may be
@@ -359,6 +359,8 @@ class LogDatabase:
         all data relevant to that message.
         """
         cursor = self.conn.cursor()
+        if filter_criteria is None:
+            filter_criteria = {}
 
         # Prepare filter criteria for insertion into SQLite query string. Example: 'datetime = "2023-12-20T15:34:54"'
         filters = []
@@ -378,7 +380,6 @@ class LogDatabase:
                         or_list.append(f"""channel LIKE "% tells %""" + '"')
                     else:
                         or_list.append(f"""{criterion} = "{or_criterion}""" + '"')
-                # or_list = [f"""{criterion} = "{or_criterion}""" + '"' for or_criterion in filter_criteria[criterion]]
                 or_statement = ' OR '.join(or_list)
                 filters.append(f"""({or_statement})""")
 
