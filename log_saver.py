@@ -363,12 +363,21 @@ class LogDatabase:
         filters = []
         for criterion in filter_criteria:
             if len(filter_criteria[criterion]) == 1:
-                filters.append(f"""{criterion} = "{filter_criteria[criterion][0]}""" + '"')
+                if criterion == 'channel' and filter_criteria[criterion] == 'Tell':
+                    filters.append("""channel LIKE "% tells %""" + '"')
+                else:
+                    filters.append(f"""{criterion} = "{filter_criteria[criterion][0]}""" + '"')
 
             # If there's more than one criterion given for on filter, prepare OR statement:
             # '(author = "Zena" OR author = "Sota" OR author = "Ussoo Ku")'
             elif len(filter_criteria[criterion]) > 1:
-                or_list = [f"""{criterion} = "{or_criterion}""" + '"' for or_criterion in filter_criteria[criterion]]
+                or_list = []
+                for or_criterion in filter_criteria[criterion]:
+                    if criterion == 'channel' and or_criterion == 'Tell':
+                        or_list.append(f"""channel LIKE "% tells %""" + '"')
+                    else:
+                        or_list.append(f"""{criterion} = "{or_criterion}""" + '"')
+                # or_list = [f"""{criterion} = "{or_criterion}""" + '"' for or_criterion in filter_criteria[criterion]]
                 or_statement = ' OR '.join(or_list)
                 filters.append(f"""({or_statement})""")
 
@@ -386,8 +395,9 @@ class LogDatabase:
         query = """SELECT * FROM logs"""
         if len(filters):
             query += ' WHERE ' + ' AND '.join(filters)
-        if order_by:
-            query += f' ORDER BY {order_by} ASC'
+
+        # Add ordering method
+        query += f' ORDER BY {order_by} ASC'
 
         # Execute query
         search_results = cursor.execute(query)
