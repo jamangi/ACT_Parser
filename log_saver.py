@@ -344,11 +344,12 @@ class LogDatabase:
             'content': content}
         return parsed_log
 
-    def select_log(self, filter_criteria):
+    def select_log(self, filter_criteria, order_by='datetime_cst'):
         """Find all messages in the logs table that match the given filter criteria. Any message metadata may be
         used as filter criteria, but it must be formatted correctly.
 
         :param filter_criteria: dict containing filter criteria used to select the appropriate message in the table.
+        :param order_by: parameter used to order the list of messages in the output. Ordered by datetime_cst by default.
         :return: list of dicts. Each dict corresponds to a message that matches the filter criteria. The dict contains
         all data relevant to that message.
         """
@@ -357,12 +358,22 @@ class LogDatabase:
         # Prepare filter criteria for insertion into SQLite query string. Example: 'datetime = "2023-12-20T15:34:54"'
         filters = []
         for criterion in filter_criteria:
-            filters.append(f"""{criterion} = "{filter_criteria[criterion][0]}""" + '"')
+            if len(filter_criteria[criterion]) == 1:
+                filters.append(f"""{criterion} = "{filter_criteria[criterion][0]}""" + '"')
+
+            # If there's more than one criterion given for on filter, prepare OR statement:
+            # '(author = "Zena" OR author = "Sota" OR author = "Ussoo Ku")'
+            elif len(filter_criteria[criterion]) > 1:
+                or_list = [f"""{criterion} = "{or_criterion}""" + '"' for or_criterion in filter_criteria[criterion]]
+                or_statement = ' OR '.join(or_list)
+                filters.append(f"""({or_statement})""")
 
         # Create query string from filter criteria. Example: SELECT * FROM logs WHERE datetime = "2023-12-20T15:34:54"
         query = """SELECT * FROM logs"""
         if len(filters):
             query += ' WHERE ' + ' AND '.join(filters)
+        if order_by:
+            query += f' ORDER BY {order_by} ASC'
 
         # Execute query
         search_results = cursor.execute(query)
