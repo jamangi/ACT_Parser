@@ -344,12 +344,16 @@ class LogDatabase:
             'content': content}
         return parsed_log
 
-    def select_log(self, filter_criteria, order_by='datetime_cst'):
+    def select_log(self, filter_criteria={},
+                   order_by='datetime_cst',
+                   start_datetime_cst=None, end_datetime_cst=None):
         """Find all messages in the logs table that match the given filter criteria. Any message metadata may be
         used as filter criteria, but it must be formatted correctly.
 
-        :param filter_criteria: dict containing filter criteria used to select the appropriate message in the table.
-        :param order_by: parameter used to order the list of messages in the output. Ordered by datetime_cst by default.
+        :param filter_criteria: dict containing filter criteria used to search for messages in the table. Required
+        :param order_by: parameter used to order the list of messages in the output. Optional; datetime_cst by default.
+        :param start_datetime_cst: start of datetime range for search. Optional
+        :param end_datetime_cst: end of datetime range for search. Optional
         :return: list of dicts. Each dict corresponds to a message that matches the filter criteria. The dict contains
         all data relevant to that message.
         """
@@ -367,6 +371,16 @@ class LogDatabase:
                 or_list = [f"""{criterion} = "{or_criterion}""" + '"' for or_criterion in filter_criteria[criterion]]
                 or_statement = ' OR '.join(or_list)
                 filters.append(f"""({or_statement})""")
+
+        # Add to query to create datetime_cst search window
+        if start_datetime_cst:
+            filters.append(f"""datetime_cst > "{start_datetime_cst}""" + '"')
+        if end_datetime_cst:
+            filters.append(f"""datetime_cst < "{end_datetime_cst}""" + '"')
+
+        # If no search parameters are given, return an empty list to avoid returning the whole log
+        if not len(filters):
+            return []
 
         # Create query string from filter criteria. Example: SELECT * FROM logs WHERE datetime = "2023-12-20T15:34:54"
         query = """SELECT * FROM logs"""
