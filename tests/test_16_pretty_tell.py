@@ -1,5 +1,6 @@
 # test_log_util.py
 from log_util import pretty_tell
+import pytest
 
 def test_pretty_tell():
     assert pretty_tell("Sota tells Ussoo Ku") == "**Sota** tells **Ussoo Ku**"
