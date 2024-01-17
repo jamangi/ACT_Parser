@@ -251,6 +251,7 @@ def test_select_log_no_filter():
 def test_select_by_date_range():
     # Setup: Create a LogDatabase instance
     log_db = LogDatabase(":memory:")
+    log_db.create_logs_table()
 
     # Insert test data
     test_data = [
@@ -303,6 +304,7 @@ def test_select_by_date_range():
 def test_select_by_date_order():
     # Setup: Create a LogDatabase instance
     log_db = LogDatabase(":memory:")
+    log_db.create_logs_table()
 
     # Insert test data
     test_data = [
@@ -357,6 +359,7 @@ def test_select_by_date_order():
 def test_select_by_date_with_filter_intermediate():
     # Setup: Create a LogDatabase instance
     log_db = LogDatabase(":memory:")
+    log_db.create_logs_table()
 
     # Insert test data
     test_data = [
