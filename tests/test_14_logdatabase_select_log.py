@@ -288,7 +288,7 @@ def test_select_by_date_range():
         log_db.insert_log(**data)
 
     # Test: Select data using select_by_date method with date range filter
-    start_datetime_cst = '2023-12-20T10:00:00'
+    start_datetime_cst = '2023-12-19T10:00:00'
     end_datetime_cst = '2023-12-21T11:00:00'
 
     selected_data_within_range = log_db.select_log(
