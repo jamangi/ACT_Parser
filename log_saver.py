@@ -183,7 +183,8 @@ class LogDatabase:
                 author TEXT,
                 channel_code TEXT,
                 channel TEXT,
-                content TEXT
+                content TEXT,
+                PRIMARY KEY (datetime_cst, author)
             )
         ''')
 
@@ -270,7 +271,7 @@ class LogDatabase:
         # Insert message into logs table
         cursor = self.conn.cursor()
         cursor.execute("""
-            INSERT INTO 
+            INSERT or IGNORE INTO 
                 logs
             VALUES 
                 (?, ?, ?, ?, ?, ?, ?)
