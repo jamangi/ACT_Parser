@@ -120,3 +120,39 @@ def test_insert_log_empty_data():
 
     with pytest.raises(ValueError, match="No data provided for insertion"):
         log_db.insert_log(**empty_data)
+
+from log_saver import LogDatabase
+
+
+def test_insert_log_duplicate_data():
+    log_db = LogDatabase(":memory:")
+    log_db.create_logs_table()
+
+    test_insert_data = {
+        'datetime': '2023-12-20T15:34:54',
+        'timezone': '-06:00',
+        'datetime_cst': '2023-12-20T09:34:54',
+        'channel_code': '000C',
+        'channel': 'Tell to Ussoo Ku',
+        'author': 'Ussoo Ku',
+        'content': "I've chatting a lot of ppl, and not everyone is a chatter",
+    }
+
+    # Insert the same data twice, which should result in only one entry in the database
+    log_db.insert_log(**test_insert_data)
+    log_db.insert_log(**test_insert_data)
+
+    cursor = log_db.conn.cursor()
+    query = """
+            SELECT datetime, timezone, datetime_cst, channel_code, channel, author, content
+            FROM logs 
+        """
+    cursor.execute(query)
+    results = cursor.fetchall()
+
+    # Verify that there is only one entry in the database
+    assert len(results) == 1
+
+    # Verify that the data in the database matches the test_insert_data
+    result = results[0]
+    assert result == tuple(test_insert_data.values())
