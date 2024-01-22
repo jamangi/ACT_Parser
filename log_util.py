@@ -1,5 +1,6 @@
 import calendar
 import re
+from datetime import datetime, timedelta
 
 import log_saver
 
@@ -33,6 +34,24 @@ def split_datetime_string(datetime_string):
     return year, month, day, hour, minute, second
 
 
+def cst_to_gmt(datetime_cst_string, hours_to_add = 6):
+    """Convert CST string to GMT string. Inputs and outputs should be formatted like '2023-12-17T11:59:56'."""
+
+    # Split cst datetime string into integer components
+    year, month, day, hour, minute, second = split_datetime_string(datetime_cst_string)
+
+    # Convert to datetime format
+    datetime_cst = datetime(year, month, day, hour, minute, second)
+
+    # Apply time change
+    datetime_gmt = datetime_cst + timedelta(hours=hours_to_add)
+
+    # Convert to string
+    datetime_gmt_string = log_saver.LogDatabase.time_to_string(datetime_gmt)
+
+    return datetime_gmt_string
+
+
 def date_discord_unix_converter(datetime_string, method):
     """Creates a unix timestamp from a GMT datetime formatted as a string
     
@@ -51,7 +70,7 @@ def date_discord_unix_converter(datetime_string, method):
     if method not in valid_methods:
         raise ValueError("Invalid method. Please choose either 't', 'T', 'd', 'D', 'f', 'F', or 'R'.")
 
-    # Split datetime string into integer components
+    # Split gmt datetime string into integer components
     year, month, day, hour, minute, second = split_datetime_string(datetime_string)
 
     # Get unix time. timegm assumes input is in UTC timezone
