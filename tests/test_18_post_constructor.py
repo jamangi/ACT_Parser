@@ -1,5 +1,5 @@
 # test_log_util.py
-from log_util import post_constructor, pretty_tell, date_discord_unix_converter
+from log_util import post_constructor, pretty_tell, date_discord_unix_converter, cst_to_gmt
 import pytest
 
 
@@ -13,7 +13,7 @@ def test_post_constructor_non_tell():
 
     result = post_constructor(post_data)
 
-    expected_result = f"{date_discord_unix_converter(post_data['datetime_cst'], 'T')} - Some Channel - **Some Author**: Some Content"
+    expected_result = f"{date_discord_unix_converter(cst_to_gmt(post_data['datetime_cst']), 'T')} - Some Channel - **Some Author**: Some Content"
     assert result == expected_result
 
 
@@ -27,7 +27,7 @@ def test_post_constructor_tell():
 
     result = post_constructor(post_data)
 
-    expected_result = f"{date_discord_unix_converter(post_data['datetime_cst'], 'T')} - {pretty_tell('Ussoo Ku tells Haltise El Yokade')}: Hello!"
+    expected_result = f"{date_discord_unix_converter(cst_to_gmt(post_data['datetime_cst']), 'T')} - {pretty_tell('Ussoo Ku tells Haltise El Yokade')}: Hello!"
     assert result == expected_result
 
 
