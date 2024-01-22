@@ -25,9 +25,9 @@ def test_date_discord_unix_converter():
     date_time = datetime(year, month, day, hour, minute, second)
 
     assert date_discord_unix_converter('2023-12-17T11:59:56', 'f') == "<t:1702814396:f>"
-    assert date_discord_unix_converter('2023-12-18', 'D') == "<t:1702857600:D>"
+    assert date_discord_unix_converter('2023-12-18T00:00:00', 'D') == "<t:1702857600:D>"
     assert date_discord_unix_converter('2023-12-17T11:59:56', 'R') == "<t:1702814396:R>"
-    assert date_discord_unix_converter('2023-12-18', 'T') == "<t:1702857600:T>"
+    assert date_discord_unix_converter('2023-12-18T00:00:00', 'T') == "<t:1702857600:T>"
 
     with pytest.raises(ValueError):
         date_discord_unix_converter('invalid_datetime', 'f')
