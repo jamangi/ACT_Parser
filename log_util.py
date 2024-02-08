@@ -34,7 +34,7 @@ def split_datetime_string(datetime_string):
     return year, month, day, hour, minute, second
 
 
-def cst_to_gmt(datetime_cst_string, hours_to_add = 6):
+def cst_to_gmt(datetime_cst_string, hours_to_add=6):
     """Convert CST string to GMT string. Inputs and outputs should be formatted like '2023-12-17T11:59:56'."""
 
     # Split cst datetime string into integer components
@@ -73,13 +73,44 @@ def date_discord_unix_converter(datetime_string, method):
     # Split gmt datetime string into integer components
     year, month, day, hour, minute, second = split_datetime_string(datetime_string)
 
-    # Get unix time. timegm assumes input is in UTC timezone
+    # Get unix time. timegm assumes input is in GMT timezone
     unix_time = calendar.timegm((year, month, day, hour, minute, second))
 
     # Create the unix timestamp using the unix time
     unix_timestamp = f"<t:{str(unix_time)}:{method}>"
 
     return unix_timestamp
+
+
+def post_constructor(post_data):
+    """Creates a string formatted to present a message together with its metadata. The string includes not only the
+    message's content but also a unix timestamp, the name of the person who sent the message and the channel it was
+    sent in.
+
+    :param post_data: (dict) the content and metadata for a single message. Must include the message's content plus
+    author, channel, and datetime_cst metadata.
+    :return: (string) a formatted post that includes all the desired metadata.
+    """
+    # Make sure post_data has all the metadata needed for this operation. The default KeyError isn't very informative
+    required_keys = ['datetime_cst', 'author', 'channel', 'content']
+    keys_present = [True for required_key in required_keys if required_key in post_data]
+    if len(keys_present) < len(required_keys):
+        raise KeyError("post_constructor is missing metadata! It needs data on datetime_cst, author, channel, and"
+                       "content or else it can't make a post")
+
+    # Create a unix timestamp for the message time
+    datetime_gmt = cst_to_gmt(post_data['datetime_cst'])
+    unix_gmt = date_discord_unix_converter(datetime_gmt, 'T')
+
+    # format the channel and author data (tells get different formatting)
+    if post_data['author'] in post_data['channel']:
+        channel_and_author = pretty_tell(post_data['channel'])
+    else:
+        channel_and_author = f"{post_data['channel']} - **{post_data['author']}**"
+
+    # Format all this metadata into a post
+    formatted_post = f"{unix_gmt} - {channel_and_author}: {post_data['content']}"
+    return formatted_post
 
 
 def pretty_tell(tell_channel):
