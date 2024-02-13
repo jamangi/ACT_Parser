@@ -87,10 +87,11 @@ def discord_spam_preparer(post_data_list):
 
         # Shorten any strings that are over 2000 characters long
         if len(post_string) >= 2000:
-
+            # If the string has spaces near the cutoff, use the last space as a separator
             if ' ' in post_string[1950:1999]:
                 this_post_string = post_string.rsplit(' ', 1)[0]
                 overflow_post_string = "(continued)" + post_string[len(this_post_string) + 1:]
+            # If there are no spaces near the cutoff, just cut it off at 1999 characters
             else:
                 this_post_string = post_string[:1999]
                 overflow_post_string = "(continued) " + post_string[1999:]
