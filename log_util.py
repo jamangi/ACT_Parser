@@ -160,6 +160,39 @@ def pretty_tell(tell_channel):
     return bolded_tell_channel
 
 
+def post_bundler(string_list):
+    """
+    Concatenates a list of strings with newlines, ensuring each resulting string is nearly 2000 characters or less.
+
+    Args:
+        string_list (list of str): List of strings to concatenate.
+
+    Returns:
+        list of str: List of concatenated strings.
+    """
+    if not string_list or not len(string_list):
+        return []
+    max_length = 2000
+    bundled_posts = []
+    current_bundle = ""
+
+    for string in string_list:
+        # Check if adding the current string would exceed the maximum length
+        if len(current_bundle) + len(string) + 1 <= max_length:
+            # Add the current string to the current bundle with a newline
+            current_bundle += string + "\n"
+        else:
+            # If adding the current string exceeds the maximum length, add the current bundle to the list
+            bundled_posts.append(current_bundle.strip())  # Remove trailing newline
+            # Start a new bundle with the current string
+            current_bundle = string + "\n"
+
+    # Append the last bundle to the list
+    bundled_posts.append(current_bundle.strip())  # Remove trailing newline
+
+    return bundled_posts
+
+
 def split_datetime_string(datetime_string):
     """Splits a datetime string into different int variables for year, month, day, hour, minute, second.
     Accepts two formats:
