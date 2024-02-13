@@ -33,7 +33,8 @@ def read_logfiles(filelist):
     """
     res = []
     for file in filelist:
-        with open(file, 'r') as fp:
+        filepath = Path(config("LOGS_FILEPATH")) / file
+        with open(filepath, 'r', encoding="utf-8") as fp:
             lines = fp.readlines()
             for line in lines:
                 res.append(line.strip('\n'))
@@ -349,21 +350,24 @@ class LogDatabase:
         # Split logs by |
         log_list = log_text.split('|')
 
-        # Find attributes
-        time = log_list[1][:-14]  # cuts off milliseconds
-        timezone = log_list[1][-6:]
-        channel_code = log_list[2]
-        author = log_list[3]
-        content = log_list[4]
+        try:
+            # Find attributes
+            time = log_list[1][:-14]  # cuts off milliseconds
+            timezone = log_list[1][-6:]
+            channel_code = log_list[2]
+            author = log_list[3]
+            content = log_list[4]
 
-        # Create dictionary of attributes and return it
-        parsed_log = {
-            'datetime': time,
-            'timezone': timezone,
-            'channel_code': channel_code,
-            'author': author,
-            'content': content}
-        return parsed_log
+            # Create dictionary of attributes and return it
+            parsed_log = {
+                'datetime': time,
+                'timezone': timezone,
+                'channel_code': channel_code,
+                'author': author,
+                'content': content}
+            return parsed_log
+        except Exception as e:
+            print(f"cannot parse: {log_list}")
 
     def select_log(self, filter_criteria=None,
                    order_by='datetime_cst',
