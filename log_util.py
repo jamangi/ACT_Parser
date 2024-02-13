@@ -5,35 +5,6 @@ from datetime import datetime, timedelta
 import log_saver
 
 
-def split_datetime_string(datetime_string):
-    """Splits a datetime string into different int variables for year, month, day, hour, minute, second.
-    Accepts two formats:
-    - '2023-12-17T11:59:56'
-    - '2023-12-18'
-    In the second case, where there's no time info, hour: minute, and second are returned as 0
-    """
-    # Check whether only year-month-day or also hour-minute-second are included in the datetime_string
-    year, month, day, hour, minute, second = '0', '0', '0', '0', '0', '0'
-    if 'T' in datetime_string:
-
-        # Split into year, month, day, hour, minute, second.
-        if not log_saver.LogDatabase.check_datetime_format(datetime_string):
-            raise ValueError('Incorrect datetime format or impossible date.')
-        datetime_string, hms = datetime_string.split('T')
-        hour, minute, second = hms.split(':')
-    year, month, day = datetime_string.split('-')
-
-    # Turn them all into integers
-    year = int(year)
-    month = int(month)
-    day = int(day)
-    hour = int(hour)
-    minute = int(minute)
-    second = int(second)
-
-    return year, month, day, hour, minute, second
-
-
 def cst_to_gmt(datetime_cst_string, hours_to_add=6):
     """Convert CST string to GMT string. Inputs and outputs should be formatted like '2023-12-17T11:59:56'."""
 
@@ -82,6 +53,53 @@ def date_discord_unix_converter(datetime_string, method):
     return unix_timestamp
 
 
+def discord_spam_preparer(post_data_list):
+    """Turns a list of metadata into a list of posts ready for Discord.
+
+    :param post_data_list: (list of dicts) A list of posts. Each post is a dict containing the post's metadata.
+    :return: (list of strings): A list of formatted post. Each post is ready for posting to Discord.
+    """
+    # Return empty lists and lists with no dicts without change
+    if len(post_data_list) == 0:
+        return post_data_list
+    number_of_dicts = len([True for element in post_data_list if isinstance(element, dict)])
+    if number_of_dicts == 0:
+        return post_data_list
+
+    post_list = post_data_list.copy()  # rename for easy comparison
+    # Add a date marker at the beginning of the list
+    init_datetime = post_list[0]['datetime_cst']
+    post_list.insert(0, '# ' + date_discord_unix_converter(init_datetime, 'F'))
+
+    for index, post_data in enumerate(post_list):
+        if isinstance(post_data, dict):  # to skip date markers and continuations
+            # If the next post is on a different date, add a date marker between them
+            if index < len(post_list) - 1:  # Make sure it's not the last element, or index will be out of range
+                this_post_datetime = post_data['datetime_cst']
+                next_post_datetime = post_list[index + 1]['datetime_cst']
+                if this_post_datetime.split('T')[0] != next_post_datetime.split('T')[0]:
+                    post_list.insert(index + 1, '# ' + date_discord_unix_converter(next_post_datetime, 'D'))
+            # Turn the metadata into a promperly formatted post
+            post_string = post_constructor(post_data)
+            post_list[index] = post_string
+        else:
+            post_string = post_data
+
+        # Shorten any strings that are over 2000 characters long
+        if len(post_string) >= 2000:
+
+            if ' ' in post_string[1950:1999]:
+                this_post_string = post_string.rsplit(' ', 1)[0]
+                overflow_post_string = "(continued)" + post_string[len(this_post_string) + 1:]
+            else:
+                this_post_string = post_string[:1999]
+                overflow_post_string = "(continued) " + post_string[1999:]
+            post_list.insert(index + 1, overflow_post_string)
+            post_list[index] = this_post_string
+
+    return post_list
+
+
 def post_constructor(post_data):
     """Creates a string formatted to present a message together with its metadata. The string includes not only the
     message's content but also a unix timestamp, the name of the person who sent the message and the channel it was
@@ -95,14 +113,14 @@ def post_constructor(post_data):
     required_keys = ['datetime_cst', 'author', 'channel', 'content']
     keys_present = [True for required_key in required_keys if required_key in post_data]
     if len(keys_present) < len(required_keys):
-        raise KeyError("post_constructor is missing metadata! It needs data on datetime_cst, author, channel, and"
+        raise KeyError("post_constructor is missing metadata! It needs data on datetime_cst, author, channel, and "
                        "content or else it can't make a post")
 
     # Create a unix timestamp for the message time
     datetime_gmt = cst_to_gmt(post_data['datetime_cst'])
     unix_gmt = date_discord_unix_converter(datetime_gmt, 'T')
 
-    # format the channel and author data (tells get different formatting)
+    # Format the channel and author data (tells get different formatting)
     if post_data['author'] in post_data['channel']:
         channel_and_author = pretty_tell(post_data['channel'])
     else:
@@ -110,6 +128,7 @@ def post_constructor(post_data):
 
     # Format all this metadata into a post
     formatted_post = f"{unix_gmt} - {channel_and_author}: {post_data['content']}"
+
     return formatted_post
 
 
@@ -138,3 +157,32 @@ def pretty_tell(tell_channel):
         bolded_tell_channel = f"**{author}** tells **{receiver}**"
 
     return bolded_tell_channel
+
+
+def split_datetime_string(datetime_string):
+    """Splits a datetime string into different int variables for year, month, day, hour, minute, second.
+    Accepts two formats:
+    - '2023-12-17T11:59:56'
+    - '2023-12-18'
+    In the second case, where there's no time info, hour: minute, and second are returned as 0
+    """
+    # Check whether only year-month-day or also hour-minute-second are included in the datetime_string
+    year, month, day, hour, minute, second = '0', '0', '0', '0', '0', '0'
+    if 'T' in datetime_string:
+
+        # Split into year, month, day, hour, minute, second.
+        if not log_saver.LogDatabase.check_datetime_format(datetime_string):
+            raise ValueError('Incorrect datetime format or impossible date.')
+        datetime_string, hms = datetime_string.split('T')
+        hour, minute, second = hms.split(':')
+    year, month, day = datetime_string.split('-')
+
+    # Turn them all into integers
+    year = int(year)
+    month = int(month)
+    day = int(day)
+    hour = int(hour)
+    minute = int(minute)
+    second = int(second)
+
+    return year, month, day, hour, minute, second
