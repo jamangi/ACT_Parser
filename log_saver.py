@@ -305,7 +305,7 @@ class LogDatabase:
             message_metadata['channel'],
             message_metadata['content']))
 
-        # self.conn.commit()
+        self.conn.commit()
         cursor.close()
 
     @staticmethod
