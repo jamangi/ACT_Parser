@@ -33,7 +33,7 @@ def read_logfiles(filelist):
     """
     res = []
     for file in filelist:
-        filepath = Path(config("LOGS_FILEPATH"), default=".") / file
+        filepath = Path(config("LOGS_FILEPATH", default='.')) / file
         with open(filepath, 'r', encoding="utf-8") as fp:
             lines = fp.readlines()
             for line in lines:
