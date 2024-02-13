@@ -8,7 +8,8 @@ import json
 from pathlib import Path
 import log_saver
 from log_saver import LogDatabase
-from log_util import discord_spam_preparer, date_discord_unix_converter, post_constructor
+from log_util import (discord_spam_preparer, date_discord_unix_converter, post_constructor,
+                      post_bundler)
 
 
 # Initialize your bot (replace 'YOUR_BOT_TOKEN' with your actual bot token)
@@ -133,11 +134,13 @@ async def read_logs(ctx: SlashContext, start_date: str = "2000-12-20T15:00:00",
 
     print(f"read_logs 3")
     result_list = discord_spam_preparer(data)
-    print(f"length of result list: {len(result_list)}")
+    print(f"length of bundled result list: {len(result_list)}")
+    bundled_list = post_bundler(result_list)
+    print(f"length of bundled result list: {len(bundled_list)}")
     print(f"read_logs 4")
 
     await ctx.defer()
-    for post in result_list:
+    for post in bundled_list:
         await ctx.send(post)
     print(f"read_logs done")
 
