@@ -142,6 +142,8 @@ async def read_logs(ctx: SlashContext, start_date: str = "2000-12-20T15:00:00",
     await ctx.defer()
     for post in bundled_list:
         await ctx.send(post)
+    if not len(bundled_list):
+        await ctx.send("No posts found")
     print(f"read_logs done")
 
 
