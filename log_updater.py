@@ -129,7 +129,9 @@ async def read_logs(ctx: SlashContext, start_date: str = "2000-12-20T15:00:00",
     data = log_db.select_log(start_datetime_cst=start_datetime_cst,  # list of post dicts
                              end_datetime_cst=end_datetime_cst,
                              filter_criteria=filter_criteria)
-    data = data[0:101]
+    limit = 1001
+    if data and len(data) > limit:
+        data = data[0:limit]
     print(f"length of data: {len(data)}")
 
     print(f"read_logs 3")
