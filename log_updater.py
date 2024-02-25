@@ -112,9 +112,9 @@ async def read_logs(ctx: SlashContext, start_date: str = "2000-12-20T15:00:00",
     if content:
         filter_criteria['content'] = [content]
     if channel_codes:
-        channel_codes = [code.title() for code in channel_codes.split(',')]
+        channel_codes = [code.strip().title() for code in channel_codes.split(',')]
     if channels:
-        channels = [channel.title() for channel in channels.split(',')]
+        channels = [channel.strip().title() for channel in channels.split(',')]
 
     if channel_codes:
         filter_criteria["channel_code"] = [channel_code for channel_code in channel_codes if channel_code in
@@ -126,10 +126,12 @@ async def read_logs(ctx: SlashContext, start_date: str = "2000-12-20T15:00:00",
         filter_criteria["channel"] = [channel for channel in channels if channel in DESIRED_CHANNELS]
 
     print(f"read_logs 2")
+    if channels:
+        print(filter_criteria["channel"])
     data = log_db.select_log(start_datetime_cst=start_datetime_cst,  # list of post dicts
                              end_datetime_cst=end_datetime_cst,
                              filter_criteria=filter_criteria)
-    limit = 1001
+    limit = 2001
     if data and len(data) > limit:
         data = data[0:limit]
     print(f"length of data: {len(data)}")
