@@ -69,6 +69,7 @@ def discord_spam_preparer(post_data_list):
     post_list = post_data_list.copy()  # rename for easy comparison
     # Add a date marker at the beginning of the list
     init_datetime = post_list[0]['datetime_cst']
+    init_datetime = cst_to_gmt(init_datetime)
     post_list.insert(0, '# ' + date_discord_unix_converter(init_datetime, 'F'))
 
     for index, post_data in enumerate(post_list):
@@ -78,6 +79,7 @@ def discord_spam_preparer(post_data_list):
                 this_post_datetime = post_data['datetime_cst']
                 next_post_datetime = post_list[index + 1]['datetime_cst']
                 if this_post_datetime.split('T')[0] != next_post_datetime.split('T')[0]:
+                    next_post_datetime = cst_to_gmt(next_post_datetime)
                     post_list.insert(index + 1, '# ' + date_discord_unix_converter(next_post_datetime, 'D'))
             # Turn the metadata into a promperly formatted post
             post_string = post_constructor(post_data)
