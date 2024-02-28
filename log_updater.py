@@ -108,7 +108,7 @@ async def read_logs(ctx: SlashContext, start_date: str = "2000-12-20T15:00:00",
     filter_criteria = {}
     print(f"read_logs 1")
     if authors:
-        filter_criteria['author'] = [author for author in authors.split(',')]
+        filter_criteria['author'] = [author.strip() for author in authors.split(', ')]
     if content:
         filter_criteria['content'] = [content]
     if channel_codes:
